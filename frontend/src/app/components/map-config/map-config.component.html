@@ -1,15 +1,59 @@
-<div class="map">
-    <div class="map map__zone">
-        MAP ZONE
-
-    </div>
-    <div class="map map__configure-inputs">
-        <button mat-raised-button (click)="configureMapLocation()">CONFIGURE LOCATION</button>
-        <button mat-raised-button (click)="configureMapText()">CONFIGURE TEXT</button>
+<div class="container">
+    <div class="container container__map-zone">
+        <div class="map">
+            <div (click)="configureMapLocation()" 
+                 class="map map__display">
+                DISPLAY
+            </div>
+            <div (click)="configureMapText()" 
+                 class="map map__background">
+                BACKGROUND
+            </div>
+        </div>
     </div>
     
-    <div class="map map__options">
-        MAP OPTIONS
+    <div class="container container__map-options">
+        <div class="options-row">
+            <ng-container *ngFor="let ar of aspectRatios$;">
+                <button (click)="selectAspectRatio(ar)" mat-raised-button >{{ar}}</button>
+            </ng-container>
+        </div>
+        <div class="options-row">
+            <button (click)="selectLayout(true)"
+                    mat-raised-button 
+                    matTooltip="portrait mode"
+                    [matTooltipPosition]="'below'" >
+                <mat-icon>crop_portrait</mat-icon>
+            </button>
+            <button (click)="selectLayout(false)"
+                    mat-raised-button 
+                    matTooltip="landscape mode"
+                    [matTooltipPosition]="'below'">
+                <mat-icon>crop_landscape</mat-icon>
+            </button>
+            <button mat-raised-button 
+                    matTooltip="increase border size"
+                    [matTooltipPosition]="'below'" >
+                <mat-icon>add_box</mat-icon>
+            </button>
+            <button mat-raised-button 
+                    matTooltip="decrease border size"
+                    [matTooltipPosition]="'below'" >
+                <mat-icon>indeterminate_check_box</mat-icon>
+            </button>
+            <button (click)="updateBackgroundSizeRadius(true)"
+                    mat-raised-button 
+                    matTooltip="increase background size ratio"
+                    [matTooltipPosition]="'below'" >
+                <mat-icon>add_box</mat-icon>
+            </button>
+            <button (click)="updateBackgroundSizeRadius(false)"
+                    mat-raised-button 
+                    matTooltip="decrease background size ratio"
+                    [matTooltipPosition]="'below'" >
+                <mat-icon>indeterminate_check_box</mat-icon>
+            </button>
+        </div>
     </div>
 </div>
 
