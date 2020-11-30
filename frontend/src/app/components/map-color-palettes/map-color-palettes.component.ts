@@ -33,7 +33,7 @@ export class MapColorPalettesComponent implements OnInit {
   }
 
   selectActivePalette(palette){
-      this.selectedActivePaletteId = palette.id;
+      this.selectedActivePaletteId = palette?.id;
       this.activeColorPalettes.forEach((p)=>{
         if(p.id !== palette.id)
           p.selected = false;

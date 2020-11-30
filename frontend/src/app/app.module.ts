@@ -18,6 +18,13 @@ import { HeaderComponent } from './components/header/header.component';
 import { DrawerComponent } from './components/drawer/drawer.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 
+
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { StudioEffects } from './state/studio/studio.effects';
+import { studioReducer } from './state/studio/studio.reducer';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,9 +43,21 @@ import { DialogComponent } from './components/dialog/dialog.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    StoreModule.forRoot({}, {}),
     MaterialModule,
     FlexLayoutModule,
+    StoreModule.forRoot({
+      studio: studioReducer,
+      router: routerReducer
+    }, {}),
+    EffectsModule.forRoot([
+      StudioEffects
+    ]),
+    StoreDevtoolsModule.instrument({
+      name: 'ATTC',
+      maxAge: 25,
+    }),
+    StoreRouterConnectingModule.forRoot(),
+    
   ],
   providers: [],
   bootstrap: [AppComponent]
