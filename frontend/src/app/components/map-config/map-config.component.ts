@@ -1,9 +1,7 @@
-import { AfterContentInit, AfterViewInit, Component, ElementRef, OnInit } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { tap } from 'rxjs/operators';
 import { DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { MapLocationComponent } from '../map-location/map-location.component';
-import { MapTextComponent } from '../map-text/map-text.component';
+import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: 'app-map-config',
@@ -75,20 +73,26 @@ export class MapConfigComponent implements OnInit, AfterContentInit {
   }
 
   public configureMapLocation(){
-    const dialogRef = this.dialog.open(
-      MapLocationComponent, {
+    this.dialog.open(
+      DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
-    });
-    dialogRef.afterClosed().pipe(tap(console.log)).subscribe();
+      data:{
+        component: 'app-map-location',
+        title: 'Adjust Map Location and Center'
+      }
+    }).afterClosed().pipe().subscribe();
   }
 
   public configureMapText(){
-    const dialogRef = this.dialog.open(
-      MapTextComponent, {
+    this.dialog.open(
+      DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
-    });
-    dialogRef.afterClosed().pipe(tap(console.log)).subscribe();
+      data:{
+        component: 'app-map-text',
+        title: 'Adjust Map Text'
+      }
+    }).afterClosed().pipe().subscribe();;
   }
 }

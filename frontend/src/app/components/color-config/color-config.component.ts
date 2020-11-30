@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { MapColorPalettesComponent } from '../map-color-palettes/map-color-palettes.component';
 import { DIALOG_CONTAINER } from '../../shared/constants';
-import { MapColorAssignmentComponent } from '../map-color-assignment/map-color-assignment.component';
+import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: 'app-color-config',
@@ -20,29 +19,28 @@ export class ColorConfigComponent implements OnInit {
   }
 
   public addColorPalettes(){
-    const dialogRef = this.dialog.open(
-      MapColorPalettesComponent, {
+    this.dialog.open(
+      DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
-    });
+      data:{
+        component: 'app-map-color-palettes',
+        title: 'Add Color Palettes'
+      }
+    }).afterClosed().pipe().subscribe();;
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      // this.animal = result;
-    });
   }
 
   public viewColorAssignments(){
-    const dialogRef = this.dialog.open(
-      MapColorAssignmentComponent, {
+    this.dialog.open(
+      DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      // this.animal = result;
-    });
+      data:{
+        component: 'app-map-color-assignment',
+        title: 'Assign Map Colors'
+      }
+    }).afterClosed().pipe().subscribe();
   }
 
 }

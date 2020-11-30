@@ -11,3 +11,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     justify-content: center;
     height: 100%;
 }
+
+.dialog-content{
+    width: 90%;
+    background-color: white;  
+    color: black; 
+    display: flex;
+    justify-content: space-between;
+    // padding:1rem;
+}

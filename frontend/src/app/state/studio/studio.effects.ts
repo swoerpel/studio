@@ -13,7 +13,7 @@ export class StudioEffects {
  
     }
 
-    defaultEffect$ = createEffect((): any => {
+    // defaultEffect$ = createEffect((): any => {
         // return this.actions$.pipe(
         //     ofType(ExplicitMapActions.UpdateSelectedMapBySearch),
         //     switchMap(({address,lat,lng}) => [
@@ -30,7 +30,7 @@ export class StudioEffects {
         //         }),
         //     ])
         // )   
-    });
+    // });
 
 };
 
