@@ -1,7 +1,43 @@
 <div class="dialog-container">
     <h2 mat-dialog-title>ADD COLOR PALETTES</h2>
-    <mat-dialog-content fxLayoutAlign="center" >
-        SELECT COLOR PALETTES HERE
+    <mat-dialog-content class="content" >
+      <div class="column column__palettes">
+        <div *ngFor="let palette of staticColorPalettes;"
+             (click)="selectStaticPalette(palette)"
+             [ngClass]="palette.selected? 'selected' : ''"
+             class="color-palette">
+          <div *ngFor="let color of palette.colors; let i = index;"
+               class="color-block"
+               [style.background-color]="color">
+          </div>
+        </div>
+       
+      </div>
+      <div class="column column__controls">
+        <button (click)="applySelectedColor()"
+                mat-raised-button 
+                matTooltip="add color palette"
+                [matTooltipPosition]="'below'" >
+            <mat-icon class="control">keyboard_arrow_right</mat-icon>
+        </button>
+        <button (click)="unapplySelectedColor()"
+                mat-raised-button 
+                matTooltip="add color palette"
+                [matTooltipPosition]="'below'" >
+            <mat-icon class="control">keyboard_arrow_left</mat-icon>
+        </button>
+      </div>
+      <div class="column column__palettes">
+        <div *ngFor="let palette of activeColorPalettes;"
+             (click)="selectActivePalette(palette)"
+             [ngClass]="palette.selected? 'selected' : ''"
+             class="color-palette">
+          <div *ngFor="let color of palette.colors; let i = index;"
+                class="color-block"
+                [style.background-color]="color">
+          </div>
+        </div>
+      </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Cancel</button>

@@ -1,7 +1,12 @@
 
 <div class="section">
     <div class="section section__inputs">
-        <button mat-raised-button (click)="addColorPalettes()">Add Color Palettes</button>
+        <button (click)="addColorPalettes()"
+                mat-raised-button 
+                matTooltip="modify color palettes"
+                [matTooltipPosition]="'below'" >
+            <mat-icon>add_box</mat-icon>
+        </button>
     </div>
     <div class="section section__palettes">COLOR PALETTES</div>
     <div class="section section__inputs">

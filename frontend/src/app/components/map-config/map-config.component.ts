@@ -46,7 +46,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit {
   public selectAspectRatio(aspectRatio: number){
     this.selectedAspectRatioIndex = this.aspectRatios$.indexOf(aspectRatio);
     let mapContainer: ClientRect = this.mapZoneRef.getBoundingClientRect();
-    let newHeight = mapContainer.height * 0.75;
+    let newHeight = mapContainer.height * 0.95;
     let newWidth = newHeight  * aspectRatio;
     if(this.portraitMode){
       this.mapContainerRef.style.width = `${newWidth}px`
