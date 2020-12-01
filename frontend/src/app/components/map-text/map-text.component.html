@@ -1,12 +1,61 @@
+    <div class="row row__text-area" >
+        <div class="text-boundary">
+            <ng-container *ngIf="(selectedTextBlockId$ | async) as selectedId">
+                <ng-container *ngFor="let tb of (textBlocks$ | async)">
+                    <div cdkDrag
+                        cdkDragBoundary=".text-boundary" 
+                        (click)="setSelectedTextBlock(tb.id)"
+                        (cdkDragEnded)="setTextBlockPosition(tb.id,tb.position,$event)"
+                        [ngClass]="selectedId === tb.id ? 'selected' : ''"
+                        [cdkDragFreeDragPosition]="tb.position"
+                        class="text-box" 
+                        [attr.id]="tb.id">
+                        {{tb.text}}
+                    </div>
+                </ng-container>
+            </ng-container>
 
-<div class="row row__text-area" >
-    <div class="text-boundary">
-        <div cdkDragBoundary=".text-boundary" class="text-box" cdkDrag>
-            CHET
         </div>
     </div>
-</div>
-<div class="row row__text-options">
-    TEXT OPTIONS
-</div>
+    <div class="row row__text-options">
+        <ng-container *ngIf="(selectedTextBlockId$ | async) as selectedId">
+            <div class="input-column">
+                <button mat-raised-button matInput (click)="alignText(selectedId, Alignment.HorizontalLeft)"
+                          class="icon-button">
+                    <mat-icon >align_horizontal_left</mat-icon>
+                </button>
+                <button mat-raised-button (click)="alignText(selectedId, Alignment.VerticalTop)"
+                          class="icon-button">
+                    <mat-icon >align_vertical_top</mat-icon>
+                </button>
+            </div>
+            <div class="input-column">
+
+                <button mat-raised-button (click)="alignText(selectedId, Alignment.HorizontalCenter)"
+                          class="icon-button">
+                    <mat-icon >align_horizontal_center</mat-icon>
+                </button>
+               
+
+                <button mat-raised-button (click)="alignText(selectedId, Alignment.VerticalCenter)"
+                        class="icon-button">
+                    <mat-icon >align_vertical_center</mat-icon>
+                </button>
+            </div>
+            <div class="input-column">
+                <button mat-raised-button (click)="alignText(selectedId, Alignment.HorizontalRight)"
+                        class="icon-button">
+                    <mat-icon >align_horizontal_right</mat-icon>
+                </button>
+                <button mat-raised-button (click)="alignText(selectedId, Alignment.VerticalBottom)"
+                          class="icon-button">
+                    <mat-icon >align_vertical_bottom</mat-icon>
+                </button>
+            </div>
+<!--          
+            <button (click)="createTextBlock()">Create Text Block</button>
+            <button (click)="deleteTextBlock(selectedId)">Delete Text Block</button>
+            <button (click)="alignText(selectedId)">Text Align</button> -->
+        </ng-container>
+    </div>
 

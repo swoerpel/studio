@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
-import { Dim } from 'src/app/shared/models';
-import { Orientation, StudioState} from './studio.reducer';
+import { Dim, Orientation } from 'src/app/shared/models';
+import { StudioState} from './studio.reducer';
 
 const studioFeatureState = createFeatureSelector<StudioState>('studio');
 
@@ -35,20 +35,17 @@ export const GetBackgroundSize = createSelector(
                 height: aspectRatio * backgroundSizeRatio,
             }
         }
-        console.log('dims',dims)
-        if(dims.width > dims.height){
-            console.log('width > height')
-            return {
-                widthRatio: 1,
-                heightRatio: dims.height / dims.width
-            }
-        }
-        else{
-            console.log('height > width')
-            return {
-                widthRatio: dims.height / dims.width,
-                heightRatio: 1
-            }
-        }
+        return (dims.width > dims.height) ? dims.height / dims.width : 1
     }
 )
+
+export const GetTextBlocks = createSelector(
+    studioFeatureState,
+    (state: StudioState): any => state.text.blocks
+)
+
+export const GetSelectedTextBlockId = createSelector(
+    studioFeatureState,
+    (state: StudioState): any => state.text.selectedTextBlockId
+)
+

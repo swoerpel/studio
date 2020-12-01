@@ -2,12 +2,13 @@ import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit } from '@ang
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { Orientation, StudioState } from 'src/app/state/studio/studio.reducer';
+import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation } from 'src/app/state/studio/studio.selectors';
 import { DialogComponent } from '../dialog/dialog.component';
 import { takeUntil, tap } from 'rxjs/operators';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { Subject } from 'rxjs';
+import { Orientation } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-map-config',
