@@ -1,5 +1,5 @@
     <div class="row row__text-area" >
-        <div class="text-boundary">
+        <div #textBoundary class="text-boundary">
             <ng-container *ngIf="(selectedTextBlockId$ | async) as selectedId">
                 <div *ngFor="let tb of (textBlocks$ | async)"
                     (click)="setSelectedTextBlock(tb.id)"
@@ -9,11 +9,11 @@
                     [attr.id]="tb.id"
                     cdkDrag
                     cdkDragBoundary=".text-boundary" 
+                    #textBlock
                     class="text-box" >
                     {{tb.text}}
                 </div>
             </ng-container>
-
         </div>
     </div>
     <div class="row row__text-options">

@@ -55,8 +55,6 @@ export const studioReducer = createReducer<StudioState>(
         }
     }),
     on(StudioActions.CreateTextBlock, (state, action): StudioState => {
-        console.log('state.textBlocks',state.textBlocks)
-        console.log('action',action)
         return {
             ...state,
             selectedTextBlockId: action.id,

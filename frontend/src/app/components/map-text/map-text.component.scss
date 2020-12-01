@@ -62,11 +62,13 @@
     justify-content: center;
     align-items: center;
     cursor: move;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-
-
 .text-boundary {
+    position: relative;
 
     width: 97.5%;
     height: 95%;
