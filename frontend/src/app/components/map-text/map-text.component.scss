@@ -8,35 +8,49 @@
 }
 
 .row{
-    width: 100%;
+    background-color: darkgrey;
+
     &__text-area{
         flex: 4;
+        width: 100%;
+
         background-color: lightgrey;
         display: flex;
         justify-content: center;
         align-items: center;
-        // padding: 0.5rem;
         position: relative;
     }
 
     &__text-options{
         flex: 1;
-        flex-shrink: 0;
-        background-color: darkgrey;
+        // flex-shrink: 0;
         display: flex;
         flex-direction: row;
-        padding: 0.25rem 0.5rem;
+        padding: 0 1rem;
     }
 }
 
-.input-column{
+.input-block{
     display: flex;
     justify-content: center;
-    flex-direction: column;
+
     & > button{
         margin: .25rem 0.5rem;
+        background-color: white;
+        color: black;
+    }
+
+    &__alignment{
+    }
+
+ 
+    &__column{
+        flex-direction: column;
+
     }
 }
+
+
 
 .text-box {
     font-size: 4rem;

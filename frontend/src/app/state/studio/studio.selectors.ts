@@ -41,11 +41,11 @@ export const GetBackgroundSize = createSelector(
 
 export const GetTextBlocks = createSelector(
     studioFeatureState,
-    (state: StudioState): any => state.text.blocks
+    (state: StudioState): any => state.textBlocks
 )
 
 export const GetSelectedTextBlockId = createSelector(
     studioFeatureState,
-    (state: StudioState): any => state.text.selectedTextBlockId
+    (state: StudioState): any => state.selectedTextBlockId
 )
 

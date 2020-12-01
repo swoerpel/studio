@@ -20,20 +20,17 @@ export interface StudioState {
     backgroundSizeRatio: number;
     aspectRatio: number;
     orientation: Orientation;
-    text:{
-        selectedTextBlockId: string;
-        blocks:TextBlock[];
-    }
+
+    selectedTextBlockId: string;
+    textBlocks:TextBlock[];
 }
 
 const initialState: StudioState = {
     backgroundSizeRatio: 0.2,
     aspectRatio: 0.8,
     orientation: Orientation.Portrait,
-    text: {
-        selectedTextBlockId:initialId,
-        blocks: [generateDefaultTextBlock(initialId)]
-    }
+    selectedTextBlockId:initialId,
+    textBlocks: [generateDefaultTextBlock(initialId)]
 }
 
 export const studioReducer = createReducer<StudioState>(
@@ -58,73 +55,46 @@ export const studioReducer = createReducer<StudioState>(
         }
     }),
     on(StudioActions.CreateTextBlock, (state, action): StudioState => {
+        console.log('state.textBlocks',state.textBlocks)
+        console.log('action',action)
         return {
             ...state,
-            text:{
-                selectedTextBlockId: action.id,
-                blocks: [...state.text.blocks, generateDefaultTextBlock(action.id, action.text)],
-            }
+            selectedTextBlockId: action.id,
+            textBlocks: [...state.textBlocks, generateDefaultTextBlock(action.id, action.text)],
         }
     }),
 
     on(StudioActions.DeleteTextBlock, (state, action): StudioState => {
         return {
             ...state,
-            text:{
-                selectedTextBlockId: action.id,
-                blocks: state.text.blocks.filter((tb: TextBlock) => tb.id !== action.id)
-            }
+            selectedTextBlockId: action.id,
+            textBlocks: state.textBlocks.filter((tb: TextBlock) => tb.id !== action.id)
         }
     }),
 
     on(StudioActions.SetSelectedTextBlockId, (state, action): StudioState => {
         return {
             ...state,
-            text:{
-                ...state.text,
-                selectedTextBlockId: action.id,
-            }
+            selectedTextBlockId: action.id,
         }
     }),
-
-    // MUCH MORE WORK TO DO TO GET ALL ALIGNMENTS SETUP
-    // on(StudioActions.AlignTextBlock, (state, action): StudioState => {
-    //     return {
-    //         ...state,
-    //         text:{
-    //             ...state.text,
-    //             blocks: state.text.blocks.map((textBlock:TextBlock) =>{
-    //                 if(textBlock.id === action.id){
-    //                     return {
-    //                         ...textBlock,
-    //                         position: {
-    //                             ...textBlock.position,
-    //                             x:0,
-    //                         }
-    //                     }
-    //                 }
-    //             })
-    //         }
-    //     }
-    // }),
 
     on(StudioActions.SetTextBlockPosition, (state, action): StudioState => {
         return {
             ...state,
-            text:{
-                ...state.text,
-                blocks: state.text.blocks.map((textBlock:TextBlock) =>{
-                    if(textBlock.id === action.id){
-                        return {
-                            ...textBlock,
-                            position: {
-                                ...textBlock.position,
-                                ...action.position
-                            }
+            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+                if(textBlock.id === action.id){
+                    return {
+                        ...textBlock,
+                        position: {
+                            ...textBlock.position,
+                            ...action.position
                         }
                     }
-                })
-            }
+                }else{
+                    return textBlock;
+                }
+            })
         }
     }),
 

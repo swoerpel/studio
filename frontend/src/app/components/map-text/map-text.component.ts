@@ -9,7 +9,6 @@ import { Alignment, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetBackgroundSize, GetSelectedTextBlockId, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
-import { Point } from 'src/app/shared/models';
 @Component({
   selector: 'app-map-text',
   templateUrl: './map-text.component.html',
@@ -32,6 +31,12 @@ export class MapTextComponent implements OnInit,AfterContentInit, OnDestroy {
   ngOnInit(): void {
     this.textBlocks$ = this.studioStore.select(GetTextBlocks)
     this.selectedTextBlockId$ = this.studioStore.select(GetSelectedTextBlockId)
+    this.selectedTextBlockId$.pipe(
+      tap(console.log)
+    ).subscribe();
+    this.textBlocks$.pipe(
+      tap(console.log)
+    ).subscribe();
   }
 
   ngAfterContentInit() {
@@ -78,6 +83,7 @@ export class MapTextComponent implements OnInit,AfterContentInit, OnDestroy {
     let textBoundaryRef = this.elementRef.nativeElement.querySelector(`div.text-boundary`);
     let textBlockContainer = textBlockRef.getBoundingClientRect();
     let textBoundaryContainer = textBoundaryRef.getBoundingClientRect();
+    console.log("textBoundaryContainer",textBoundaryContainer)
     let position: any = {x:0,y:0};
     switch(alignment){
       case Alignment.HorizontalLeft: {
@@ -99,6 +105,7 @@ export class MapTextComponent implements OnInit,AfterContentInit, OnDestroy {
         position = {y:textBoundaryContainer.height - textBlockContainer.height}
       } break;
     }
+    console.log('position',position)
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
   }
 
@@ -107,7 +114,10 @@ export class MapTextComponent implements OnInit,AfterContentInit, OnDestroy {
     let textBlockRef = this.elementRef.nativeElement.querySelector(`div#${id}`);
     let textBoundaryContainer = textBoundaryRef.getBoundingClientRect();
     let textBlockContainer = textBlockRef.getBoundingClientRect();
+    console.log('textBoundaryContainer',textBoundaryContainer)
+    console.log('position before',position)
     position = {x:position.x + event.distance.x, y:position.y + event.distance.y}
+    console.log('position after',position)
     if(position.y < 0){
       position.y = 0;
     }
@@ -115,12 +125,17 @@ export class MapTextComponent implements OnInit,AfterContentInit, OnDestroy {
       position.y = textBoundaryContainer.y;
     }
     if(position.x < 0){
+      console.log('left x')
       position.x = 0;
     }
     if(position.x > textBoundaryContainer.width - textBlockContainer.width){
       position.x = textBoundaryContainer.width - textBlockContainer.width;
     }
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
+  }
+
+  private refreshTextBoundaryContainerRef(){
+    
   }
 
 
