@@ -103,7 +103,23 @@ export class MapTextComponent implements OnInit,AfterContentInit, OnDestroy {
   }
 
   public setTextBlockPosition(id: string,position: any,event: CdkDragEnd){
+    let textBoundaryRef = this.elementRef.nativeElement.querySelector(`div.text-boundary`);
+    let textBlockRef = this.elementRef.nativeElement.querySelector(`div#${id}`);
+    let textBoundaryContainer = textBoundaryRef.getBoundingClientRect();
+    let textBlockContainer = textBlockRef.getBoundingClientRect();
     position = {x:position.x + event.distance.x, y:position.y + event.distance.y}
+    if(position.y < 0){
+      position.y = 0;
+    }
+    if(position.y > textBoundaryContainer.y - textBlockContainer.height){
+      position.y = textBoundaryContainer.y;
+    }
+    if(position.x < 0){
+      position.x = 0;
+    }
+    if(position.x > textBoundaryContainer.width - textBlockContainer.width){
+      position.x = textBoundaryContainer.width - textBlockContainer.width;
+    }
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
   }
 
