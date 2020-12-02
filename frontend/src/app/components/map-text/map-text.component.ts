@@ -9,7 +9,7 @@ import { makeid } from 'src/app/shared/helpers';
 import { Alignment, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetBackgroundSize, GetSelectedTextBlockFontSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextAreaPadding, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 @Component({
   selector: 'app-map-text',
   templateUrl: './map-text.component.html',
@@ -26,6 +26,8 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   public textBlocks$: Observable<TextBlock[]>;
   public selectedTextBlockId$: Observable<string>;
   public selectedTextBlockValue$: Observable<string>;
+
+  public textAreaPadding$: Observable<any>;
 
   public textBlockValueFormControl: FormControl = new FormControl('',{updateOn: 'blur'});
 
@@ -52,6 +54,13 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       takeUntil(this.unsubscribe)
     ).subscribe();
 
+    this.textAreaPadding$ = this.studioStore.select(GetTextAreaPadding).pipe(
+      map((textAreaPadding: number)=>{
+        return {'outline-offset': `-${textAreaPadding}rem`};
+      })
+    )
+
+    this.textAreaPadding$.subscribe(console.log);
 
   }
 
@@ -68,6 +77,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
         }
         this.textBoundaryRef.nativeElement.style.width = `${newWidth}px`;
         this.textBoundaryRef.nativeElement.style.height = `${newHeight}px`;
+        // this.textBoundaryRef.nativeElement.style['box-sizing'] = `content-box`;
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();

@@ -80,9 +80,10 @@
     position: relative;
     width: 97.5%;
     height: 95%;
-    outline: 2px dashed black;
     max-width: 100%;
     outline: dotted black 2px;
+    border: solid red 2px;
+    outline-offset: -5px;
 }
 
 .text-box {

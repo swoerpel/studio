@@ -14,6 +14,10 @@ export const SetOrientation = createAction(
     '[Studio] Set Orientation',
     props<{orientation: Orientation}>()
 )
+export const SetTextAreaPadding = createAction(
+    '[Studio] Set Text Area Padding',
+    props<{textAreaPadding: number;}>()
+)
 
 // map text area
 export const CreateTextBlock = createAction(

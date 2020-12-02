@@ -19,6 +19,11 @@ export const GetOrientation = createSelector(
     (state: StudioState): any => state.orientation
 )
 
+export const GetTextAreaPadding = createSelector(
+    studioFeatureState,
+    (state: StudioState): any => state.textAreaPadding
+)
+
 export const GetBackgroundSize = createSelector(
     studioFeatureState,
     GetAspectRatio,

@@ -24,6 +24,7 @@ export interface StudioState {
     backgroundSizeRatio: number;
     aspectRatio: number;
     orientation: Orientation;
+    textAreaPadding: number;
 
     selectedTextBlockId: string;
     textBlocks:TextBlock[];
@@ -32,6 +33,7 @@ export interface StudioState {
 const initialState: StudioState = {
     backgroundSizeRatio: 0.2,
     aspectRatio: 0.8,
+    textAreaPadding: 3,
     orientation: Orientation.Portrait,
     selectedTextBlockId:initialId,
     textBlocks: [generateDefaultTextBlock(initialId)]
@@ -56,6 +58,12 @@ export const studioReducer = createReducer<StudioState>(
         return {
             ...state,
             orientation: action.orientation,
+        }
+    }),
+    on(StudioActions.SetTextAreaPadding, (state, action): StudioState => {
+        return {
+            ...state,
+            textAreaPadding: action.textAreaPadding,
         }
     }),
     on(StudioActions.CreateTextBlock, (state, action): StudioState => {
