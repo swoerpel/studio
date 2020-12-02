@@ -1,6 +1,6 @@
     <div class="row row__text-area" >
-        <div [ngStyle]="(textAreaPadding$ | async)"
-             #textBoundary 
+        <!-- [ngStyle]="(textAreaPadding$ | async)" -->
+        <div #textBoundary 
              class="text-boundary">
             <ng-container *ngIf="(selectedTextBlockId$ | async) as selectedId">
                 <div *ngFor="let tb of (textBlocks$ | async)"

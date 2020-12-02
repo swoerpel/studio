@@ -16,7 +16,7 @@ const generateDefaultTextBlock = (
     position:{x:0,y:0},
     fontSize: DEFAULT_FONT_SIZE,
     letterSpacing: DEFAULT_LETTER_SPACING,
-    fontWeight: DEFAULT_FONT_WEIGHT
+    fontWeight: DEFAULT_FONT_WEIGHT,
 });
 
 
@@ -60,12 +60,12 @@ export const studioReducer = createReducer<StudioState>(
             orientation: action.orientation,
         }
     }),
-    on(StudioActions.SetTextAreaPadding, (state, action): StudioState => {
-        return {
-            ...state,
-            textAreaPadding: action.textAreaPadding,
-        }
-    }),
+    // on(StudioActions.SetTextAreaPadding, (state, action): StudioState => {
+    //     return {
+    //         ...state,
+    //         textAreaPadding: action.textAreaPadding,
+    //     }
+    // }),
     on(StudioActions.CreateTextBlock, (state, action): StudioState => {
         return {
             ...state,
@@ -107,6 +107,7 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
+
     on(StudioActions.SetTextBlockValue, (state, action): StudioState => {
         return {
             ...state,
@@ -173,5 +174,6 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
+
 
 );

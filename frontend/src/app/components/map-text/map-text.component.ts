@@ -1,15 +1,15 @@
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subject } from 'rxjs';
-import { first, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
 import { Alignment, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextAreaPadding, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 @Component({
   selector: 'app-map-text',
   templateUrl: './map-text.component.html',
@@ -54,13 +54,11 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       takeUntil(this.unsubscribe)
     ).subscribe();
 
-    this.textAreaPadding$ = this.studioStore.select(GetTextAreaPadding).pipe(
-      map((textAreaPadding: number)=>{
-        return {'outline-offset': `-${textAreaPadding}rem`};
-      })
-    )
-
-    this.textAreaPadding$.subscribe(console.log);
+    // this.textAreaPadding$ = this.studioStore.select(GetTextAreaPadding).pipe(
+    //   map((textAreaPadding: number)=>{
+    //     return {'outline-offset': `-${textAreaPadding}rem`};
+    //   })
+    // )
 
   }
 
