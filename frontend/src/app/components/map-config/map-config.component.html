@@ -6,8 +6,19 @@
                 DISPLAY
             </div>
             <div (click)="configureMapText()" 
-                 class="map map__background">
-                BACKGROUND
+                 class="map map__background"
+                 #textBoundary>
+                 <div   *ngFor="let tb of (textBlocks$ | async)"
+                        [cdkDragFreeDragPosition]="tb.origin"
+                        [cdkDragDisabled]="true"
+                        [ngStyle]="assignTextBlockStyle(tb)"
+                        [attr.id]="tb.id"
+                        cdkDrag
+                        cdkDragBoundary=".text-boundary" 
+                        class="text-box"
+                        #textBlock >
+                    {{tb.text}}
+                </div>
             </div>
         </div>
     </div>

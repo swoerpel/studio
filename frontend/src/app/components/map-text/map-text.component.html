@@ -6,10 +6,10 @@
                 <div *ngFor="let tb of (textBlocks$ | async)"
                     (click)="setSelectedTextBlock(tb.id)"
                     (cdkDragStarted)="setSelectedTextBlock(tb.id)"
-                    (cdkDragEnded)="updateTextBlockPosition(tb.id,tb.position,$event)"
+                    (cdkDragEnded)="updateTextBlockOrigin(tb.id,tb.origin,$event)"
                     [ngClass]="selectedId === tb.id ? 'selected' : ''"
                     [ngStyle]="setSelectedTextBlockStyle(tb)"
-                    [cdkDragFreeDragPosition]="tb.position"
+                    [cdkDragFreeDragPosition]="tb.origin"
                     [attr.id]="tb.id"
                     cdkDrag
                     cdkDragBoundary=".text-boundary" 

@@ -3,12 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation } from 'src/app/state/studio/studio.selectors';
+import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 import { DialogComponent } from '../dialog/dialog.component';
 import { takeUntil, tap } from 'rxjs/operators';
 import { StudioActions } from 'src/app/state/studio/actions';
-import { Subject } from 'rxjs';
-import { Orientation } from 'src/app/shared/models';
+import { Observable, Subject } from 'rxjs';
+import { Orientation, TextBlock } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-map-config',
@@ -29,6 +29,8 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   public mapDisplayRef;
   public mapBackgroundRef;
 
+  public textBlocks$: Observable<TextBlock[]>;
+
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
@@ -38,6 +40,8 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.textBlocks$ = this.studioStore.select(GetTextBlocks);
+    this.textBlocks$.subscribe(console.log);
     this.studioStore.select(GetBackgroundSizeRatio).pipe(
       tap((backgroundSizeRatio) => {
         this.backgroundSizeRatio = backgroundSizeRatio
@@ -71,6 +75,19 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   ngOnDestroy(){
     this.unsubscribe.next()
     this.unsubscribe.complete()
+  }
+
+  public assignTextBlockStyle(textBlock :TextBlock){
+    // console.log('textBlock',textBlock)
+    //DOES NOT WORK AT ALL, NEED TO SAVE BOX RATIOS ON CHANGE
+    const sizeScaler = 1.05;
+    const letterSpacingScaler = 1;
+    return {
+      'font-size': `${textBlock.fontSize * sizeScaler}rem`,
+      'height': `${textBlock.fontSize * sizeScaler}rem`,
+      'letter-spacing':`${textBlock.letterSpacing * letterSpacingScaler}rem`,
+      'font-weight':`${textBlock.fontWeight}`,
+    };
   }
 
   public setOrientation(orientation: Orientation, dispatchAction: boolean = true){

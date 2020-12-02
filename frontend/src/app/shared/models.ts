@@ -21,7 +21,7 @@ export interface PrintSize {
 export interface TextBlock{
     id: string;
     text: string;
-    position: Point;
+    origin: Point;
     fontSize: number;
     letterSpacing: number;
     fontWeight: number;
@@ -35,4 +35,11 @@ export interface Dim{
 export interface Point{
     x?: number;
     y?: number;
+}
+
+export interface TextBlockPosition {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
 }

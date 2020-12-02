@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
-import { Alignment, MapTextType, Point, TextBlock } from 'src/app/shared/models';
+import { Alignment, MapTextType, Point, TextBlock, TextBlockPosition } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
@@ -98,12 +98,15 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   }
 
   public updateFontSize(id,increase: boolean){
+    this.calculateAndUpdateTextBlockPosition(id);
     this.studioStore.dispatch(StudioActions.UpdateTextBlockFontSize({id,increase}));
   }
   public updateLetterSpacing(id: string, increase: boolean){
+    this.calculateAndUpdateTextBlockPosition(id);
     this.studioStore.dispatch(StudioActions.UpdateTextBlockLetterSpacing({id, increase}));
   } 
   public updateFontWeight(id: string, increase: boolean){
+    this.calculateAndUpdateTextBlockPosition(id);
     this.studioStore.dispatch(StudioActions.UpdateTextBlockFontWeight({id, increase}));
   } 
 
@@ -144,39 +147,40 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
     let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
 
-    let position: any = {x:0,y:0};
+    let origin: any = {x:0,y:0};
     switch(alignment){
       case Alignment.HorizontalLeft: {
-        position = {x:0}
+        origin = {x:0}
       } break;
       case Alignment.HorizontalCenter: {
-        position = {x:textBoundaryContainer.width / 2 - textBlockContainer.width / 2}
+        origin = {x:textBoundaryContainer.width / 2 - textBlockContainer.width / 2}
       } break;
       case Alignment.HorizontalRight: {
-        position = {x:textBoundaryContainer.width - textBlockContainer.width}
+        origin = {x:textBoundaryContainer.width - textBlockContainer.width}
       } break;
       case Alignment.VerticalTop: {
-        position = {y:0}
+        origin = {y:0}
       } break;
       case Alignment.VerticalCenter: {
-        position = {y:textBoundaryContainer.height / 2 - textBlockContainer.height / 2}
+        origin = {y:textBoundaryContainer.height / 2 - textBlockContainer.height / 2}
       } break;
       case Alignment.VerticalBottom: {
-        position = {y:textBoundaryContainer.height - textBlockContainer.height}
+        origin = {y:textBoundaryContainer.height - textBlockContainer.height}
       } break;
     }
-    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
+    this.studioStore.dispatch(StudioActions.SetTextBlockOrigin({id,origin}))
   }
 
-  public updateTextBlockPosition(id: string,position: any,event: CdkDragEnd){
-    let newPosition = {
-      x:position.x + event.distance.x, 
-      y:position.y + event.distance.y
+  public updateTextBlockOrigin(id: string,origin: any,event: CdkDragEnd){
+
+    let neworigin = {
+      x:origin.x + event.distance.x, 
+      y:origin.y + event.distance.y
     }
-    this.setTextBlockPosition(id,newPosition);
+    this.setTextBlockOrigin(id,neworigin);
   }
 
-  public setTextBlockPosition(id: string,position: Point){
+  public setTextBlockOrigin(id: string,origin: Point){
     let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
     if(!textBlockRef){
       return;
@@ -184,19 +188,38 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
     let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
     
-    if(position.y < 0){
-      position.y = 0;
+    if(origin.y < 0){
+      origin.y = 0;
     }
-    if(position.y > textBoundaryContainer.height - textBlockContainer.height){
-      position.y = textBoundaryContainer.height - textBlockContainer.height;
+    if(origin.y > textBoundaryContainer.height - textBlockContainer.height){
+      origin.y = textBoundaryContainer.height - textBlockContainer.height;
     }
-    if(position.x < 0){
-      position.x = 0;
+    if(origin.x < 0){
+      origin.x = 0;
     }
-    if(position.x > textBoundaryContainer.width - textBlockContainer.width){
-      position.x = textBoundaryContainer.width - textBlockContainer.width;
+    if(origin.x > textBoundaryContainer.width - textBlockContainer.width){
+      origin.x = textBoundaryContainer.width - textBlockContainer.width;
     }
-    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
+    this.calculateAndUpdateTextBlockPosition(id);
+    this.studioStore.dispatch(StudioActions.SetTextBlockOrigin({id,origin}))
   }
+
+  // NEW
+  public calculateAndUpdateTextBlockPosition(id: string,){
+    let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
+    let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
+    let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
+    let position: TextBlockPosition = {
+      x: (textBlockContainer.x - textBoundaryContainer.x) / (textBoundaryContainer.width),
+      y: (textBlockContainer.y - textBoundaryContainer.y) / (textBoundaryContainer.height),
+      width: textBlockContainer.width / textBoundaryContainer.width,
+      height: textBlockContainer.height / textBoundaryContainer.height,
+    }
+    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id, position}))
+  }
+
+
+  // change 'origin' to 'origin', 'origin' turns into a origin object with x,y,width,height
+
 
 }
