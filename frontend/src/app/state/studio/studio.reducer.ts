@@ -17,6 +17,7 @@ const generateDefaultTextBlock = (
     fontSize: DEFAULT_FONT_SIZE,
     letterSpacing: DEFAULT_LETTER_SPACING,
     fontWeight: DEFAULT_FONT_WEIGHT,
+    position: {x:0,y:0,width:0.389815255,height:0.231281}
 });
 
 
@@ -99,7 +100,8 @@ export const studioReducer = createReducer<StudioState>(
                         origin: {
                             ...textBlock.origin,
                             ...action.origin
-                        }
+                        },
+                        position: {...textBlock.position}
                     }
                 }
                 return textBlock;

@@ -9,12 +9,8 @@
                  class="map map__background"
                  #textBoundary>
                  <div   *ngFor="let tb of (textBlocks$ | async)"
-                        [cdkDragFreeDragPosition]="tb.origin"
-                        [cdkDragDisabled]="true"
-                        [ngStyle]="assignTextBlockStyle(tb)"
+                        [ngStyle]="setTextBlockPosition(tb.id,tb.position, tb.fontWeight)"
                         [attr.id]="tb.id"
-                        cdkDrag
-                        cdkDragBoundary=".text-boundary" 
                         class="text-box"
                         #textBlock >
                     {{tb.text}}

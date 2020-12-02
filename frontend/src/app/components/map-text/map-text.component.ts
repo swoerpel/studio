@@ -168,16 +168,18 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
         origin = {y:textBoundaryContainer.height - textBlockContainer.height}
       } break;
     }
-    this.studioStore.dispatch(StudioActions.SetTextBlockOrigin({id,origin}))
+    // console.log('origin',origin)
+    this.setTextBlockOrigin(id,origin)
+    // this.studioStore.dispatch(StudioActions.SetTextBlockOrigin({id,origin}))
+    // this.calculateAndUpdateTextBlockPosition(id);
   }
 
   public updateTextBlockOrigin(id: string,origin: any,event: CdkDragEnd){
-
-    let neworigin = {
+    let newOrigin = {
       x:origin.x + event.distance.x, 
       y:origin.y + event.distance.y
     }
-    this.setTextBlockOrigin(id,neworigin);
+    this.setTextBlockOrigin(id,newOrigin);
   }
 
   public setTextBlockOrigin(id: string,origin: Point){
@@ -200,26 +202,36 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     if(origin.x > textBoundaryContainer.width - textBlockContainer.width){
       origin.x = textBoundaryContainer.width - textBlockContainer.width;
     }
-    this.calculateAndUpdateTextBlockPosition(id);
+    this.calculateAndUpdateTextBlockPosition(id );
+
     this.studioStore.dispatch(StudioActions.SetTextBlockOrigin({id,origin}))
+
   }
 
-  // NEW
-  public calculateAndUpdateTextBlockPosition(id: string,){
-    let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
-    let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
-    let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
+  public calculateAndUpdateTextBlockPosition(id: string){
+    let textBlockRef = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
+    let block = textBlockRef.nativeElement.getBoundingClientRect();
+    let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
+    console.log('BLOCKx ->',block.x)
+    console.log('BOUNDx ->',bound.x)
+    console.log("block.x - bound.x",block.x - bound.x)
+
+    // if(!!origin){
+    //   console.log('originx',origin.x)
+    //   block.x = origin.x;
+    //   block.y = origin.y;
+    // }
+
     let position: TextBlockPosition = {
-      x: (textBlockContainer.x - textBoundaryContainer.x) / (textBoundaryContainer.width),
-      y: (textBlockContainer.y - textBoundaryContainer.y) / (textBoundaryContainer.height),
-      width: textBlockContainer.width / textBoundaryContainer.width,
-      height: textBlockContainer.height / textBoundaryContainer.height,
+      x: (block.x - bound.x) / (bound.width),
+      y: (block.y - bound.y) / (bound.height),
+      width: block.width / bound.width,
+      height: block.height / bound.height,
     }
-    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id, position}))
+    console.log("NEW POSITION BEFORE REDUX", position)
+    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id, position}));
+
   }
-
-
-  // change 'origin' to 'origin', 'origin' turns into a origin object with x,y,width,height
 
 
 }

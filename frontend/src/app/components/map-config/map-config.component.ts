@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
@@ -8,7 +8,7 @@ import { DialogComponent } from '../dialog/dialog.component';
 import { takeUntil, tap } from 'rxjs/operators';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { Observable, Subject } from 'rxjs';
-import { Orientation, TextBlock } from 'src/app/shared/models';
+import { Orientation, TextBlock, TextBlockPosition } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-map-config',
@@ -16,6 +16,10 @@ import { Orientation, TextBlock } from 'src/app/shared/models';
   styleUrls: ['./map-config.component.scss']
 })
 export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
+
+
+  @ViewChild('textBoundary') textBoundaryRef: ElementRef;
+  @ViewChildren('textBlock') textBlocksRef: QueryList<ElementRef>;
 
   public Orientation: typeof Orientation = Orientation;
   public aspectRatios = [...ASPECT_RATIOS];
@@ -77,16 +81,38 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     this.unsubscribe.complete()
   }
 
-  public assignTextBlockStyle(textBlock :TextBlock){
-    // console.log('textBlock',textBlock)
-    //DOES NOT WORK AT ALL, NEED TO SAVE BOX RATIOS ON CHANGE
-    const sizeScaler = 1.05;
-    const letterSpacingScaler = 1;
+  public setTextBlockPosition(id: string,position :TextBlockPosition, fontWeight: number){
+
+    let textBlockRef:any = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === id)
+    if(!textBlockRef || !position){
+      return {};
+    }
+    let block = textBlockRef.nativeElement.getBoundingClientRect();
+    let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
+
+    // console.log("position.y",position.y)
+
+    let newPosition: TextBlockPosition = {
+      x: bound.width * position.x,
+      y: bound.height * position.y,
+      width: bound.width * position.width,
+      height: bound.height * position.height,
+    }
+
+    // console.log('newPosition.width',newPosition.width)
+    // console.log('newPosition.height',newPosition.height)
+
     return {
-      'font-size': `${textBlock.fontSize * sizeScaler}rem`,
-      'height': `${textBlock.fontSize * sizeScaler}rem`,
-      'letter-spacing':`${textBlock.letterSpacing * letterSpacingScaler}rem`,
-      'font-weight':`${textBlock.fontWeight}`,
+      'position': 'absolute',
+      'top': `${newPosition.y}px`,
+      'left': `${newPosition.x}px`,
+      'width': `${newPosition.width}px`,
+      'height': `${newPosition.height}px`,
+      'font-size': `${bound.height * position.height}px`,
+      // 'height': `${textBlock.fontSize * sizeScaler}rem`,
+      // 'letter-spacing':`${textBlock.letterSpacing * letterSpacingScaler}rem`,
+      'padding': 0,
+      'font-weight':`${fontWeight}`,
     };
   }
 
