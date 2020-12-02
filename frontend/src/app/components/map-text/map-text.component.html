@@ -3,14 +3,16 @@
             <ng-container *ngIf="(selectedTextBlockId$ | async) as selectedId">
                 <div *ngFor="let tb of (textBlocks$ | async)"
                     (click)="setSelectedTextBlock(tb.id)"
+                    (cdkDragStarted)="setSelectedTextBlock(tb.id)"
                     (cdkDragEnded)="setTextBlockPosition(tb.id,tb.position,$event)"
                     [ngClass]="selectedId === tb.id ? 'selected' : ''"
+                    [ngStyle]="setSelectedTextBlockFontSize(tb.fontSize)"
                     [cdkDragFreeDragPosition]="tb.position"
                     [attr.id]="tb.id"
                     cdkDrag
                     cdkDragBoundary=".text-boundary" 
-                    #textBlock
-                    class="text-box" >
+                    class="text-box"
+                    #textBlock >
                     {{tb.text}}
                 </div>
             </ng-container>
@@ -18,48 +20,121 @@
     </div>
     <div class="row row__text-options">
         <ng-container *ngIf="(selectedTextBlockId$ | async) as selectedId">
+            <div class="input-block input-block__text">
+                <div class="input-block input-block__column">
+                    <input  [formControl]="textBlockValueFormControl" 
+                            matInput
+                            autocomplete="off"
+                            type="text" 
+                            placeholder="text" 
+                            class="text-input">
+                </div>
+            </div>
             <div class="input-block input-block__alignment">
                 <div class="input-block input-block__column">
-                    <button mat-raised-button matInput (click)="alignText(selectedId, Alignment.HorizontalLeft)">
+                    <button (click)="setSelectedTextBlockValue(MapTextType.LatLng)" 
+							mat-raised-button
+                            matTooltip="set lat lng"
+                            [matTooltipPosition]="'above'" >
+                        <mat-icon >map</mat-icon>
+                    </button>
+                    <button (click)="setSelectedTextBlockValue(MapTextType.CityName)" 
+							mat-raised-button
+                            matTooltip="set city name"
+                            [matTooltipPosition]="'below'" >
+                        <mat-icon >location_city</mat-icon>
+                    </button>                
+                </div>
+                <div class="input-block input-block__column">
+                    <button (click)="updateFontSize(selectedId,true)"
+							mat-raised-button
+                            matTooltip="increase font size"
+                            [matTooltipPosition]="'above'" >
+                        <mat-icon >format_size</mat-icon>
+                    </button>
+                    <button (click)="updateFontSize(selectedId,false)"
+							mat-raised-button
+                            matTooltip="decrease font size"
+                            [matTooltipPosition]="'below'" >
+                        <mat-icon >text_fields</mat-icon>
+                    </button>                
+                </div>
+            </div>
+            <div class="input-block input-block__alignment">
+                <div class="input-block input-block__column">
+                    <button (click)="createTextBlock()" 
+							mat-raised-button
+                            matTooltip="create text block"
+                            [matTooltipPosition]="'above'" >
+                        <mat-icon >add_box</mat-icon>
+                    </button>
+                    <button (click)="deleteTextBlock(selectedId)" 
+							mat-raised-button
+                            matTooltip="delete text block"
+                            [matTooltipPosition]="'below'" >
+                        <mat-icon >delete</mat-icon>
+                    </button>
+                </div>
+                <div class="input-block input-block__column">
+                    <button (click)="alignText(selectedId, Alignment.HorizontalLeft)"
+                            matInput  
+							mat-raised-button
+                            matTooltip="align horizontal left"
+                            [matTooltipPosition]="'above'" >
                         <mat-icon >align_horizontal_left</mat-icon>
                     </button>
-                    <button mat-raised-button (click)="alignText(selectedId, Alignment.VerticalTop)">
+                    <button (click)="alignText(selectedId, Alignment.VerticalTop)" 
+							mat-raised-button
+                            matTooltip="align vertical top"
+                            [matTooltipPosition]="'below'" >
                         <mat-icon >align_vertical_top</mat-icon>
                     </button>
                 </div>
                 <div class="input-block input-block__column">
-                    <button mat-raised-button (click)="alignText(selectedId, Alignment.HorizontalCenter)">
+                    <button (click)="alignText(selectedId, Alignment.HorizontalCenter)" 
+							mat-raised-button
+                            matTooltip="align horizontal center"
+                            [matTooltipPosition]="'above'" >
                         <mat-icon >align_horizontal_center</mat-icon>
                     </button>
-                    <button mat-raised-button (click)="alignText(selectedId, Alignment.VerticalCenter)">
+                    <button (click)="alignText(selectedId, Alignment.VerticalCenter)" 
+							mat-raised-button
+                            matTooltip="align vertical center"
+                            [matTooltipPosition]="'below'" >
                         <mat-icon >align_vertical_center</mat-icon>
                     </button>
                 </div>
                 <div class="input-block input-block__column">
-                    <button mat-raised-button (click)="alignText(selectedId, Alignment.HorizontalRight)">
+                    <button (click)="alignText(selectedId, Alignment.HorizontalRight)" 
+							mat-raised-button
+                            matTooltip="align horizontal right"
+                            [matTooltipPosition]="'above'" >
                         <mat-icon >align_horizontal_right</mat-icon>
                     </button>
-                    <button mat-raised-button (click)="alignText(selectedId, Alignment.VerticalBottom)">
+                    <button (click)="alignText(selectedId, Alignment.VerticalBottom)" 
+							mat-raised-button
+                            matTooltip="align vertical bottom"
+                            [matTooltipPosition]="'below'" >
                         <mat-icon >align_vertical_bottom</mat-icon>
                     </button>
                 </div>
             </div>
-            <div class="input-block">
+            <!-- <div class="input-block">
                 <div class="input-block input-block__column">
-                    <button mat-raised-button (click)="createTextBlock()">
+                    <button (click)="createTextBlock()"> 
+							mat-raised-button
                         <mat-icon >add_box</mat-icon>
                     </button>
-                </div>
-                <div class="input-block input-block__column">
-                    <button mat-raised-button (click)="deleteTextBlock(selectedId)">
+                    <button (click)="deleteTextBlock(selectedId)"> 
+							mat-raised-button
                         <mat-icon >indeterminate_check_box</mat-icon>
                     </button>
                 </div>
-            </div>
-<!--          
-            <button (click)="createTextBlock()">Create Text Block</button>
-            <button (click)="deleteTextBlock(selectedId)">Delete Text Block</button>
-            <button (click)="alignText(selectedId)">Text Align</button> -->
+            </div> -->
         </ng-container>
     </div>
 
+
+
+
+    

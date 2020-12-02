@@ -29,11 +29,15 @@ export const SetSelectedTextBlockId = createAction(
     '[Studio] Set Selected Text Block Id',
     props<{id: string;}>()
 )
-// export const AlignTextBlock = createAction(
-//     '[Studio] Align Text Block',
-//     props<{id: string; alignment: Alignment}>()
-// )
 export const SetTextBlockPosition = createAction(
     '[Studio] Set Text Block Position',
     props<{id: string; position: Point;}>()
+)
+export const SetTextBlockValue = createAction(
+    '[Studio] Set Text Block Value',
+    props<{id: string; text: string;}>()
+)
+export const UpdateTextBlockFontSize = createAction(
+    '[Studio] Update Text Block Font Size',
+    props<{id: string; increase: boolean}>()
 )

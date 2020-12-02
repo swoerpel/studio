@@ -1,3 +1,12 @@
+
+::ng-deep .mat-tooltip {
+    // position: absolute;
+    font-size: 1.5rem;
+
+    padding: 0.5rem 1rem;
+
+}
+
 :host{
     display: flex;
     flex-direction: column;
@@ -9,11 +18,9 @@
 
 .row{
     background-color: darkgrey;
-
     &__text-area{
         flex: 4;
         width: 100%;
-
         background-color: lightgrey;
         display: flex;
         justify-content: center;
@@ -23,7 +30,6 @@
 
     &__text-options{
         flex: 1;
-        // flex-shrink: 0;
         display: flex;
         flex-direction: row;
         padding: 0 1rem;
@@ -33,30 +39,51 @@
 .input-block{
     display: flex;
     justify-content: center;
-
+    width: 100%;
+    height: 100%;
     & > button{
         margin: .25rem 0.5rem;
         background-color: white;
         color: black;
     }
 
-    &__alignment{
+    &__text{
     }
 
+    &__alignment{
+    }
  
     &__column{
         flex-direction: column;
-
     }
 }
 
 
+.text-input{
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 1rem;
+    outline: none;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+
+// Drag Boundary & Items
+.text-boundary {
+    position: relative;
+    width: 97.5%;
+    height: 95%;
+    outline: 2px dashed black;
+    max-width: 100%;
+    outline: dotted black 2px;
+}
 
 .text-box {
-    font-size: 4rem;
-    height: 4rem;
+    // font-size: 4rem;
+    // height: 4rem;
     width: auto;
-    background-color: transparent;
+    background-color: rgba(white,0.5);
     color: black;
     display: inline-flex;
     justify-content: center;
@@ -67,20 +94,6 @@
     left: 0;
 }
 
-.text-boundary {
-    position: relative;
-
-    width: 97.5%;
-    height: 95%;
-    outline: 2px dashed black;
-    max-width: 100%;
-    outline: dotted black 2px;
-}
-
 .selected{
     outline: 3px solid black;
-}
-
-.test{
-    background-color: orangered;
 }

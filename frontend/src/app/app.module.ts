@@ -24,6 +24,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StudioEffects } from './state/studio/studio.effects';
 import { studioReducer } from './state/studio/studio.reducer';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,7 @@ import { studioReducer } from './state/studio/studio.reducer';
       maxAge: 25,
     }),
     StoreRouterConnectingModule.forRoot(),
-    
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

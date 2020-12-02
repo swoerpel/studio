@@ -9,6 +9,9 @@ export const DIALOG_CONTAINER = {
     HEIGHT: '80%'
 }
 
+export const DEFAULT_FONT_SIZE = 4;
+export const FONT_SIZE_INCREMENT = 0.25;
+
 export const MAP_TEXT_BOUNDARY_SIZE = 0.98;
 
 export const PRINT_SIZES: PrintSize[] = [

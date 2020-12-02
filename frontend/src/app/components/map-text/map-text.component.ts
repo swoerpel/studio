@@ -1,14 +1,15 @@
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { first, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
-import { Alignment, TextBlock } from 'src/app/shared/models';
+import { Alignment, MapTextType, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetBackgroundSize, GetSelectedTextBlockId, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { GetBackgroundSize, GetSelectedTextBlockFontSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 @Component({
   selector: 'app-map-text',
   templateUrl: './map-text.component.html',
@@ -17,41 +18,41 @@ import { GetBackgroundSize, GetSelectedTextBlockId, GetTextBlocks } from 'src/ap
 export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
 
   public Alignment = Alignment;
+  public MapTextType = MapTextType;
 
   @ViewChild('textBoundary') textBoundaryRef: ElementRef;
   @ViewChildren('textBlock') textBlocksRef: QueryList<ElementRef>;
 
   public textBlocks$: Observable<TextBlock[]>;
   public selectedTextBlockId$: Observable<string>;
+  public selectedTextBlockValue$: Observable<string>;
+
+  public textBlockValueFormControl: FormControl = new FormControl('',{updateOn: 'blur'});
 
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
     private studioStore: Store<StudioState>,
     private elementRef: ElementRef,
+    private _renderer : Renderer2
   ) { }
 
   ngOnInit(): void {
-    this.textBlocks$ = this.studioStore.select(GetTextBlocks).pipe(
-      // map((blocks)=>{
-      //   let newBlocks = blocks.map((block,i)=>{
-      //     if(i === blocks.length - 1){
-      //       return{
-      //         ...block,
-      //         position: {
-      //           x: block.position.x - 100,
-      //           y: block.position.y
-      //         }
-      //       }
-      //     }
-      //     return block;
-      //   })
-      //   return newBlocks
-      // })
-    )
-    this.selectedTextBlockId$ = this.studioStore.select(GetSelectedTextBlockId)
+    this.textBlocks$ = this.studioStore.select(GetTextBlocks);
+    this.selectedTextBlockId$ = this.studioStore.select(GetSelectedTextBlockId);
+    this.studioStore.select(GetSelectedTextBlockValue).pipe(
+      tap((text:string) => this.textBlockValueFormControl.patchValue(text,{emitEvent: false})),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
 
-    this.textBlocks$.subscribe(console.log);
+    this.textBlockValueFormControl.valueChanges.pipe(
+      withLatestFrom(this.selectedTextBlockId$),
+      map(([text,id])=>({id,text})),
+      tap((payload)=>this.studioStore.dispatch(StudioActions.SetTextBlockValue(payload))),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
+
+
   }
 
   ngAfterViewInit(){
@@ -70,37 +71,62 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
+
   }
+
 
   ngOnDestroy(){
     this.unsubscribe.next()
     this.unsubscribe.complete()
   }
 
+  setSelectedTextBlockFontSize(fontSize: number){
+    return {
+      'font-size': `${fontSize}rem`,
+      'height': `${fontSize}rem`
+    };
+  }
+
+
   public createTextBlock(){
     this.studioStore.dispatch(StudioActions.CreateTextBlock({
       id: makeid(),
       text: 'stetson chet',
     }))
-
   }
 
   public setSelectedTextBlock(id: string){
     this.studioStore.dispatch(StudioActions.SetSelectedTextBlockId({id}));
   } 
+
+  public setSelectedTextBlockValue(mapTextType: MapTextType){
+    switch(mapTextType){
+      case MapTextType.CityName:{
+
+      }break;
+      case MapTextType.LatLng:{
+
+      }break;
+      case MapTextType.Custom:{
+
+      }break;
+    }
+  }
+
   public deleteTextBlock(id: string){
     this.studioStore.dispatch(StudioActions.DeleteTextBlock({id}));
   } 
 
+  public updateFontSize(id,increase: boolean){
+    this.studioStore.dispatch(StudioActions.UpdateTextBlockFontSize({id,increase}));
+  }
 
   public alignText(id: string, alignment: Alignment){
     let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
-    // textBlockRef.reset();
     let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
     let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
+
     let position: any = {x:0,y:0};
-    console.log("boundary X & Y ->",Math.round(textBoundaryContainer.x),Math.round(textBoundaryContainer.y))
-    console.log("textblock X & Y ->",Math.round(textBlockContainer.x),Math.round(textBlockContainer.y))
     switch(alignment){
       case Alignment.HorizontalLeft: {
         position = {x:0}
@@ -121,22 +147,21 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
         position = {y:textBoundaryContainer.height - textBlockContainer.height}
       } break;
     }
-    console.log('position.x',position.x)
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
   }
 
   public setTextBlockPosition(id: string,position: any,event: CdkDragEnd){
-
+    
     let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
     let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
     let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
-    console.log("event.distance",event.distance)
+    
     position = {x:position.x + event.distance.x, y:position.y + event.distance.y}
     if(position.y < 0){
       position.y = 0;
     }
-    if(position.y > textBoundaryContainer.y){//} - textBlockContainer.height){
-      position.y = textBoundaryContainer.y;
+    if(position.y > textBoundaryContainer.height - textBlockContainer.height){
+      position.y = textBoundaryContainer.height - textBlockContainer.height;
     }
     if(position.x < 0){
       position.x = 0;
@@ -144,7 +169,6 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     if(position.x > textBoundaryContainer.width - textBlockContainer.width){
       position.x = textBoundaryContainer.width - textBlockContainer.width;
     }
-    console.log("position",position)
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
   }
 

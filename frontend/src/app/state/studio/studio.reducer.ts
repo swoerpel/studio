@@ -1,4 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
+import { DEFAULT_FONT_SIZE, FONT_SIZE_INCREMENT } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
 import { Orientation, TextBlock } from 'src/app/shared/models';
 import { StudioActions} from './actions';
@@ -12,7 +13,8 @@ const generateDefaultTextBlock = (
 ): TextBlock => ({
     id,
     text,
-    position:{x:0,y:0}
+    position:{x:0,y:0},
+    fontSize: DEFAULT_FONT_SIZE
 });
 
 
@@ -88,6 +90,38 @@ export const studioReducer = createReducer<StudioState>(
                             ...textBlock.position,
                             ...action.position
                         }
+                    }
+                }else{
+                    return textBlock;
+                }
+            })
+        }
+    }),
+    on(StudioActions.SetTextBlockValue, (state, action): StudioState => {
+        return {
+            ...state,
+            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+                if(textBlock.id === action.id){
+                    return {
+                        ...textBlock,
+                        text: action.text
+                    }
+                }else{
+                    return textBlock;
+                }
+            })
+        }
+    }),
+    on(StudioActions.UpdateTextBlockFontSize, (state, action): StudioState => {
+        return {
+            ...state,
+            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+                if(textBlock.id === action.id){
+                    return {
+                        ...textBlock,
+                        fontSize: (action.increase) ? 
+                            textBlock.fontSize + FONT_SIZE_INCREMENT :
+                            textBlock.fontSize - FONT_SIZE_INCREMENT
                     }
                 }else{
                     return textBlock;

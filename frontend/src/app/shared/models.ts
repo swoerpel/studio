@@ -1,3 +1,5 @@
+export enum MapTextType {LatLng, CityName, Custom}
+
 export enum Alignment {
     HorizontalLeft,
     HorizontalCenter,
@@ -20,6 +22,7 @@ export interface TextBlock{
     id: string;
     text: string;
     position: Point;
+    size: number;
 }
 
 export interface Dim{
