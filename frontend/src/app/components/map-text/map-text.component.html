@@ -4,9 +4,9 @@
                 <div *ngFor="let tb of (textBlocks$ | async)"
                     (click)="setSelectedTextBlock(tb.id)"
                     (cdkDragStarted)="setSelectedTextBlock(tb.id)"
-                    (cdkDragEnded)="setTextBlockPosition(tb.id,tb.position,$event)"
+                    (cdkDragEnded)="updateTextBlockPosition(tb.id,tb.position,$event)"
                     [ngClass]="selectedId === tb.id ? 'selected' : ''"
-                    [ngStyle]="setSelectedTextBlockFontSize(tb.fontSize)"
+                    [ngStyle]="setSelectedTextBlockStyle(tb)"
                     [cdkDragFreeDragPosition]="tb.position"
                     [attr.id]="tb.id"
                     cdkDrag
@@ -23,7 +23,6 @@
             <div class="input-block input-block__text">
                 <div class="input-block input-block__column">
                     <input  [formControl]="textBlockValueFormControl" 
-                            matInput
                             autocomplete="off"
                             type="text" 
                             placeholder="text" 
@@ -43,6 +42,34 @@
                             matTooltip="set city name"
                             [matTooltipPosition]="'below'" >
                         <mat-icon >location_city</mat-icon>
+                    </button>                
+                </div>
+                <div class="input-block input-block__column">
+                    <button (click)="updateLetterSpacing(selectedId, true)" 
+							mat-raised-button
+                            matTooltip="increase letter spacing"
+                            [matTooltipPosition]="'above'" >
+                        <mat-icon class="rotate-icon">unfold_more</mat-icon>
+                    </button>
+                    <button (click)="updateLetterSpacing(selectedId, false)"
+							mat-raised-button
+                            matTooltip="decrease letter spacing"
+                            [matTooltipPosition]="'below'" >
+                        <mat-icon class="rotate-icon">unfold_less</mat-icon>
+                    </button>                
+                </div>
+                <div class="input-block input-block__column">
+                    <button (click)="updateFontWeight(selectedId, true)" 
+							mat-raised-button
+                            matTooltip="increase font weight"
+                            [matTooltipPosition]="'above'" >
+                        <mat-icon class="rotate-icon">unfold_more</mat-icon>
+                    </button>
+                    <button (click)="updateFontWeight(selectedId, false)"
+							mat-raised-button
+                            matTooltip="decrease font weight"
+                            [matTooltipPosition]="'below'" >
+                        <mat-icon class="rotate-icon">unfold_less</mat-icon>
                     </button>                
                 </div>
                 <div class="input-block input-block__column">
@@ -119,18 +146,6 @@
                     </button>
                 </div>
             </div>
-            <!-- <div class="input-block">
-                <div class="input-block input-block__column">
-                    <button (click)="createTextBlock()"> 
-							mat-raised-button
-                        <mat-icon >add_box</mat-icon>
-                    </button>
-                    <button (click)="deleteTextBlock(selectedId)"> 
-							mat-raised-button
-                        <mat-icon >indeterminate_check_box</mat-icon>
-                    </button>
-                </div>
-            </div> -->
         </ng-container>
     </div>
 

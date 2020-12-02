@@ -6,7 +6,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { first, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
-import { Alignment, MapTextType, TextBlock } from 'src/app/shared/models';
+import { Alignment, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetBackgroundSize, GetSelectedTextBlockFontSize, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
@@ -80,12 +80,24 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     this.unsubscribe.complete()
   }
 
-  setSelectedTextBlockFontSize(fontSize: number){
+  setSelectedTextBlockStyle(textBlock: TextBlock){
     return {
-      'font-size': `${fontSize}rem`,
-      'height': `${fontSize}rem`
+      'font-size': `${textBlock.fontSize}rem`,
+      'height': `${textBlock.fontSize}rem`,
+      'letter-spacing':`${textBlock.letterSpacing}rem`,
+      'font-weight':`${textBlock.fontWeight}`,
     };
   }
+
+  public updateFontSize(id,increase: boolean){
+    this.studioStore.dispatch(StudioActions.UpdateTextBlockFontSize({id,increase}));
+  }
+  public updateLetterSpacing(id: string, increase: boolean){
+    this.studioStore.dispatch(StudioActions.UpdateTextBlockLetterSpacing({id, increase}));
+  } 
+  public updateFontWeight(id: string, increase: boolean){
+    this.studioStore.dispatch(StudioActions.UpdateTextBlockFontWeight({id, increase}));
+  } 
 
 
   public createTextBlock(){
@@ -117,9 +129,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     this.studioStore.dispatch(StudioActions.DeleteTextBlock({id}));
   } 
 
-  public updateFontSize(id,increase: boolean){
-    this.studioStore.dispatch(StudioActions.UpdateTextBlockFontSize({id,increase}));
-  }
+
 
   public alignText(id: string, alignment: Alignment){
     let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
@@ -150,13 +160,22 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
   }
 
-  public setTextBlockPosition(id: string,position: any,event: CdkDragEnd){
-    
+  public updateTextBlockPosition(id: string,position: any,event: CdkDragEnd){
+    let newPosition = {
+      x:position.x + event.distance.x, 
+      y:position.y + event.distance.y
+    }
+    this.setTextBlockPosition(id,newPosition);
+  }
+
+  public setTextBlockPosition(id: string,position: Point){
     let textBlockRef:any = this.textBlocksRef.find((block: any)=>block.nativeElement.id === id)
+    if(!textBlockRef){
+      return;
+    }
     let textBoundaryContainer = this.textBoundaryRef.nativeElement.getBoundingClientRect();
     let textBlockContainer = textBlockRef.nativeElement.getBoundingClientRect();
     
-    position = {x:position.x + event.distance.x, y:position.y + event.distance.y}
     if(position.y < 0){
       position.y = 0;
     }

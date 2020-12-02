@@ -1,6 +1,5 @@
-import { Point } from '@angular/cdk/drag-drop';
 import {createAction, props} from '@ngrx/store';
-import { Alignment, Orientation } from 'src/app/shared/models';
+import { Alignment, Orientation, Point } from 'src/app/shared/models';
 
 // map layout & spacing
 export const SetBackgroundSizeRatio = createAction(
@@ -39,5 +38,13 @@ export const SetTextBlockValue = createAction(
 )
 export const UpdateTextBlockFontSize = createAction(
     '[Studio] Update Text Block Font Size',
+    props<{id: string; increase: boolean}>()
+)
+export const UpdateTextBlockLetterSpacing = createAction(
+    '[Studio] Update Text Block Letter Spacing',
+    props<{id: string; increase: boolean}>()
+)
+export const UpdateTextBlockFontWeight = createAction(
+    '[Studio] Update Text Block Font Weight',
     props<{id: string; increase: boolean}>()
 )

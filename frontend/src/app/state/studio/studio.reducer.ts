@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { DEFAULT_FONT_SIZE, FONT_SIZE_INCREMENT } from 'src/app/shared/constants';
+import { DEFAULT_FONT_SIZE, DEFAULT_FONT_WEIGHT, DEFAULT_LETTER_SPACING, FONT_SIZE_INCREMENT, FONT_WEIGHT_INCREMENT, LETTER_SPACING_SIZE_INCREMENT } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
 import { Orientation, TextBlock } from 'src/app/shared/models';
 import { StudioActions} from './actions';
@@ -14,7 +14,9 @@ const generateDefaultTextBlock = (
     id,
     text,
     position:{x:0,y:0},
-    fontSize: DEFAULT_FONT_SIZE
+    fontSize: DEFAULT_FONT_SIZE,
+    letterSpacing: DEFAULT_LETTER_SPACING,
+    fontWeight: DEFAULT_FONT_WEIGHT
 });
 
 
@@ -122,6 +124,40 @@ export const studioReducer = createReducer<StudioState>(
                         fontSize: (action.increase) ? 
                             textBlock.fontSize + FONT_SIZE_INCREMENT :
                             textBlock.fontSize - FONT_SIZE_INCREMENT
+                    }
+                }else{
+                    return textBlock;
+                }
+            })
+        }
+    }),
+    on(StudioActions.UpdateTextBlockLetterSpacing, (state, action): StudioState => {
+        return {
+            ...state,
+            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+                if(textBlock.id === action.id){
+                    return {
+                        ...textBlock,
+                        letterSpacing: (action.increase) ? 
+                            textBlock.letterSpacing + LETTER_SPACING_SIZE_INCREMENT :
+                            textBlock.letterSpacing - LETTER_SPACING_SIZE_INCREMENT
+                    }
+                }else{
+                    return textBlock;
+                }
+            })
+        }
+    }),
+    on(StudioActions.UpdateTextBlockFontWeight, (state, action): StudioState => {
+        return {
+            ...state,
+            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+                if(textBlock.id === action.id){
+                    return {
+                        ...textBlock,
+                        fontWeight: (action.increase) ? 
+                            textBlock.fontWeight + FONT_WEIGHT_INCREMENT :
+                            textBlock.fontWeight - FONT_WEIGHT_INCREMENT
                     }
                 }else{
                     return textBlock;

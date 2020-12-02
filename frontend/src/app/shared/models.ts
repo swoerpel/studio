@@ -22,7 +22,8 @@ export interface TextBlock{
     id: string;
     text: string;
     position: Point;
-    size: number;
+    fontSize: number;
+    letterSpacing: number;
 }
 
 export interface Dim{

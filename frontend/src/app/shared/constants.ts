@@ -12,6 +12,12 @@ export const DIALOG_CONTAINER = {
 export const DEFAULT_FONT_SIZE = 4;
 export const FONT_SIZE_INCREMENT = 0.25;
 
+export const DEFAULT_LETTER_SPACING = 0;
+export const LETTER_SPACING_SIZE_INCREMENT = 0.1;
+
+export const DEFAULT_FONT_WEIGHT = 400;
+export const FONT_WEIGHT_INCREMENT = 100;
+
 export const MAP_TEXT_BOUNDARY_SIZE = 0.98;
 
 export const PRINT_SIZES: PrintSize[] = [
