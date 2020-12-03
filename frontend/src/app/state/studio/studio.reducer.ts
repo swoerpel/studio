@@ -17,7 +17,7 @@ const generateDefaultTextBlock = (
     fontSize: DEFAULT_FONT_SIZE,
     letterSpacing: DEFAULT_LETTER_SPACING,
     fontWeight: DEFAULT_FONT_WEIGHT,
-    position: {x:0,y:0,width:0.389815255,height:0.231281}
+    positionRatios: { origin:{ x:0,y:0 }, dim:{ width:0.389815255, height:0.231281 }}
 });
 
 
@@ -101,7 +101,7 @@ export const studioReducer = createReducer<StudioState>(
                             ...textBlock.origin,
                             ...action.origin
                         },
-                        position: {...textBlock.position}
+                        // position: {...textBlock.position}
                     }
                 }
                 return textBlock;
@@ -188,6 +188,20 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
+    // on(StudioActions.SetTextBlockPosition, (state, action): StudioState => {
+    //     return {
+    //         ...state,
+    //         textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+    //             if(textBlock.id === action.id){
+    //                 return {
+    //                     ...textBlock,
+    //                     position: {...action.position}
+    //                 }
+    //             }
+    //             return textBlock;
+    //         })
+    //     }
+    // }),
 
 
 );

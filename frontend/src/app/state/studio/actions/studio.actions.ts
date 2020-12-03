@@ -1,5 +1,5 @@
 import {createAction, props} from '@ngrx/store';
-import { Alignment, Orientation, Point, TextBlockPosition } from 'src/app/shared/models';
+import { Alignment, Orientation, Point, PositionRatios, TextBlockPosition } from 'src/app/shared/models';
 
 // map layout & spacing
 export const SetBackgroundSizeRatio = createAction(
@@ -52,7 +52,11 @@ export const UpdateTextBlockFontWeight = createAction(
     '[Studio] Update Text Block Font Weight',
     props<{id: string; increase: boolean}>()
 )
+// export const SetTextBlockPosition = createAction(
+//     '[Studio] Set Text Block Position',
+//     props<{id: string; position: TextBlockPosition;}>()
+// )
 export const SetTextBlockPosition = createAction(
     '[Studio] Set Text Block Position',
-    props<{id: string; position: TextBlockPosition;}>()
+    props<{id: string; position: Point;}>()
 )

@@ -25,6 +25,8 @@ export interface TextBlock{
     fontSize: number;
     letterSpacing: number;
     fontWeight: number;
+    position: Point;
+    dimensions: Dim;
 }
 
 export interface Dim{
@@ -43,3 +45,21 @@ export interface TextBlockPosition {
     width: number;
     height: number;
 }
+
+
+
+// ONLY BETWEEN 0 & 1
+export interface PositionRatios{
+    origin: PointRatio;
+    dim: DimRatio;
+}
+export interface PointRatio{
+    x: number;
+    y: number;
+}
+export interface DimRatio{
+    width: number;
+    height: number;    
+}
+
+

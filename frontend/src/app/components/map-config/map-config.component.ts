@@ -45,7 +45,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   ngOnInit(): void {
     this.textBlocks$ = this.studioStore.select(GetTextBlocks);
-    this.textBlocks$.subscribe(console.log);
     this.studioStore.select(GetBackgroundSizeRatio).pipe(
       tap((backgroundSizeRatio) => {
         this.backgroundSizeRatio = backgroundSizeRatio
