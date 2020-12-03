@@ -132,7 +132,6 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     console.log('dimensions',dimensions)
   }
 
-
   public updateFontSize(id,increase: boolean){
     this.updateTextBlockDimensions(id)
     this.studioStore.dispatch(StudioActions.UpdateTextBlockFontSize({id,increase}));

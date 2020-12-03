@@ -37,10 +37,3 @@ export interface Point{
     x?: number;
     y?: number;
 }
-
-export interface TextBlockPosition {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}

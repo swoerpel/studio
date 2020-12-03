@@ -9,7 +9,7 @@
                  class="map map__background"
                  #textBoundary>
                  <div   *ngFor="let tb of (textBlocks$ | async)"
-                        [ngStyle]="setTextBlockPosition(tb.id,tb.position, tb.fontWeight)"
+                        [ngStyle]="setTextBlockPosition(tb)"
                         [attr.id]="tb.id"
                         class="text-box"
                         #textBlock >

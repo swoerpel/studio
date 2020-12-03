@@ -1,14 +1,14 @@
 import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
+import { Dim, Orientation, Point, TextBlock } from 'src/app/shared/models';
+import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 import { DialogComponent } from '../dialog/dialog.component';
-import { takeUntil, tap } from 'rxjs/operators';
-import { StudioActions } from 'src/app/state/studio/actions';
-import { Observable, Subject } from 'rxjs';
-import { Orientation, TextBlock, TextBlockPosition } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-map-config',
@@ -80,38 +80,29 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     this.unsubscribe.complete()
   }
 
-  public setTextBlockPosition(id: string,position :TextBlockPosition, fontWeight: number){
-
-    let textBlockRef:any = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === id)
-    if(!textBlockRef || !position){
-      return {};
-    }
-    let block = textBlockRef.nativeElement.getBoundingClientRect();
+  public setTextBlockPosition(tb: TextBlock){
+    // let textBlockRef:any = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === tb.id)
+    if(!this.textBoundaryRef){return;}
     let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
-
-    // console.log("position.y",position.y)
-
-    let newPosition: TextBlockPosition = {
-      x: bound.width * position.x,
-      y: bound.height * position.y,
-      width: bound.width * position.width,
-      height: bound.height * position.height,
+    let origin:Point = {
+      x: bound.width * tb.position.x,
+      y: bound.height * tb.position.y,
     }
-
-    // console.log('newPosition.width',newPosition.width)
-    // console.log('newPosition.height',newPosition.height)
+    let dimensions:Dim = {
+      width: bound.width * tb.dimensions.width,
+      height: bound.height * tb.dimensions.height,
+    }
 
     return {
       'position': 'absolute',
-      'top': `${newPosition.y}px`,
-      'left': `${newPosition.x}px`,
-      'width': `${newPosition.width}px`,
-      'height': `${newPosition.height}px`,
-      'font-size': `${bound.height * position.height}px`,
-      // 'height': `${textBlock.fontSize * sizeScaler}rem`,
-      // 'letter-spacing':`${textBlock.letterSpacing * letterSpacingScaler}rem`,
+      'top': `${origin.y}px`,
+      'left': `${origin.x}px`,
+      'width': `${dimensions.width}px`,
+      'height': `${dimensions.height}px`,
+      'font-size': `${dimensions.height}px`,
+      'letter-spacing':`${tb.letterSpacing}rem`,
       'padding': 0,
-      'font-weight':`${fontWeight}`,
+      'font-weight':`${tb.fontWeight}`,
     };
   }
 
