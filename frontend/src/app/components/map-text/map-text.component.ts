@@ -115,12 +115,10 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   
   public setTextBlockPosition(position: Point){
     let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
-    if(!boundary || !position){return;}
-    let scaledPosition: Point = {
-      x: (position.x * boundary.width),
-      y: (position.y * boundary.height),
+    return{
+      x: position.x * boundary?.width || 0,
+      y: position.y* boundary?.height || 0,
     }
-    return scaledPosition;
   }
 
   public updateTextBlockDimensions(id: string){

@@ -13,11 +13,12 @@ const generateDefaultTextBlock = (
 ): TextBlock => ({
     id,
     text,
-    origin:{x:0,y:0},
     fontSize: DEFAULT_FONT_SIZE,
     letterSpacing: DEFAULT_LETTER_SPACING,
     fontWeight: DEFAULT_FONT_WEIGHT,
-    positionRatios: { origin:{ x:0,y:0 }, dim:{ width:0.389815255, height:0.231281 }}
+    position: {x:0,y:0},
+    dimensions:{ width:0.389815255, height:0.231281 }
+    // positionRatios: { origin:{ x:0,y:0 }, dim:{ width:0.389815255, height:0.231281 }}
 });
 
 
@@ -90,24 +91,24 @@ export const studioReducer = createReducer<StudioState>(
         }
     }),
 
-    on(StudioActions.SetTextBlockOrigin, (state, action): StudioState => {
-        return {
-            ...state,
-            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
-                if(textBlock.id === action.id){
-                    return {
-                        ...textBlock,
-                        origin: {
-                            ...textBlock.origin,
-                            ...action.origin
-                        },
-                        // position: {...textBlock.position}
-                    }
-                }
-                return textBlock;
-            })
-        }
-    }),
+    // on(StudioActions.SetTextBlockOrigin, (state, action): StudioState => {
+    //     return {
+    //         ...state,
+    //         textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+    //             if(textBlock.id === action.id){
+    //                 return {
+    //                     ...textBlock,
+    //                     origin: {
+    //                         ...textBlock.origin,
+    //                         ...action.origin
+    //                     },
+    //                     // position: {...textBlock.position}
+    //                 }
+    //             }
+    //             return textBlock;
+    //         })
+    //     }
+    // }),
 
     on(StudioActions.SetTextBlockValue, (state, action): StudioState => {
         return {

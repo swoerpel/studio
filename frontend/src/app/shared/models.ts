@@ -21,7 +21,6 @@ export interface PrintSize {
 export interface TextBlock{
     id: string;
     text: string;
-    origin: Point;
     fontSize: number;
     letterSpacing: number;
     fontWeight: number;
