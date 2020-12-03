@@ -102,14 +102,6 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       'font-weight':`${textBlock.fontWeight}`,
     };
   }
-
-  public toTextBlockDimensions(position: TextBlockPosition): Dim{
-    let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
-    return {
-      width: bound.width * position.width,
-      height: bound.height * position.height,
-    }
-  }
   public updateTextBlockPosition(id: string){
     let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
     let textBlock = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === id)
@@ -128,7 +120,6 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       x: (position.x * boundary.width),
       y: (position.y * boundary.height),
     }
-
     return scaledPosition;
   }
 

@@ -1,5 +1,5 @@
 import {createAction, props} from '@ngrx/store';
-import { Alignment, Orientation, Point, PositionRatios, TextBlockPosition } from 'src/app/shared/models';
+import { Alignment, Orientation, Point, TextBlockPosition } from 'src/app/shared/models';
 
 // map layout & spacing
 export const SetBackgroundSizeRatio = createAction(
