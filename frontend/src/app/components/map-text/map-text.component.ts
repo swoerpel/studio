@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
-import { Alignment, Dim, MapTextType, Point, TextBlock, TextBlockPosition } from 'src/app/shared/models';
+import { Alignment, Dim, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockPosition, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
@@ -117,8 +117,9 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
     return{
       x: position.x * boundary?.width || 0,
-      y: position.y* boundary?.height || 0,
+      y: position.y * boundary?.height || 0,
     }
+    // return{x:0,y:0}
   }
 
   public updateTextBlockDimensions(id: string){
@@ -176,7 +177,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
         origin = {y:boundary.height - textBlock.height}
       } break;
     }
-    console.log('origin',origin)
+    console.log('origin',origin);
   }
 
   public setSelectedTextBlockValue(mapTextType: MapTextType){

@@ -2,7 +2,7 @@ import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, 
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { map, takeUntil, tap } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { Dim, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
@@ -16,7 +16,6 @@ import { DialogComponent } from '../dialog/dialog.component';
   styleUrls: ['./map-config.component.scss']
 })
 export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
-
 
   @ViewChild('textBoundary') textBoundaryRef: ElementRef;
   @ViewChildren('textBlock') textBlocksRef: QueryList<ElementRef>;
@@ -35,6 +34,8 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   public textBlocks$: Observable<TextBlock[]>;
 
+  public textBlockStyles$: Observable<any>;
+
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
@@ -44,7 +45,13 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.textBlocks$ = this.studioStore.select(GetTextBlocks);
+    this.textBlocks$ = this.studioStore.select(GetTextBlocks);//combineLatest([
+    this.textBlockStyles$ = this.textBlocks$.pipe(
+      map((tbs: TextBlock[]) =>
+        tbs.reduce((obj,tb: TextBlock)=>({...obj,[tb.id]:this.calculateTextBlockStyle(tb)}),{})
+      )
+    )
+
     this.studioStore.select(GetBackgroundSizeRatio).pipe(
       tap((backgroundSizeRatio) => {
         this.backgroundSizeRatio = backgroundSizeRatio
@@ -80,9 +87,8 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     this.unsubscribe.complete()
   }
 
-  public setTextBlockPosition(tb: TextBlock){
-    // let textBlockRef:any = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === tb.id)
-    if(!this.textBoundaryRef){return;}
+  public calculateTextBlockStyle(tb: TextBlock){
+    if(!this?.textBoundaryRef){return;}
     let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
     let origin:Point = {
       x: bound.width * tb.position.x,
@@ -92,7 +98,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       width: bound.width * tb.dimensions.width,
       height: bound.height * tb.dimensions.height,
     }
-
     return {
       'position': 'absolute',
       'top': `${origin.y}px`,
@@ -104,6 +109,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       'padding': 0,
       'font-weight':`${tb.fontWeight}`,
     };
+
   }
 
   public setOrientation(orientation: Orientation, dispatchAction: boolean = true){

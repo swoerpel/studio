@@ -1,20 +1,16 @@
 <div class="container">
     <div class="container container__map-zone">
         <div class="map">
-            <div (click)="configureMapLocation()" 
-                 class="map map__display">
-                DISPLAY
-            </div>
-            <div (click)="configureMapText()" 
-                 class="map map__background"
-                 #textBoundary>
-                 <div   *ngFor="let tb of (textBlocks$ | async)"
-                        [ngStyle]="setTextBlockPosition(tb)"
-                        [attr.id]="tb.id"
-                        class="text-box"
-                        #textBlock >
-                    {{tb.text}}
-                </div>
+            <div (click)="configureMapLocation()" class="map map__display">DISPLAY</div>
+            <div (click)="configureMapText()" class="map map__background" #textBoundary>
+                <ng-container *ngIf="(textBlockStyles$ | async) as tbStyles">
+                    <div *ngFor="let tb of (textBlocks$ | async)"
+                         [attr.id]="tb.id"
+                         [ngStyle]="tbStyles[tb.id]"
+                         #textBlock>
+                        {{tb.text}}
+                    </div>
+                </ng-container>
             </div>
         </div>
     </div>
