@@ -2,13 +2,14 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnI
 import { FormControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { delay, map, skip, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
 import { Alignment, Dim, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockPosition, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { head } from 'lodash';
 @Component({
   selector: 'app-map-text',
   templateUrl: './map-text.component.html',
@@ -53,13 +54,11 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       takeUntil(this.unsubscribe)
     ).subscribe();
 
-
     // this.textAreaPadding$ = this.studioStore.select(GetTextAreaPadding).pipe(
     //   map((textAreaPadding: number)=>{
     //     return {'outline-offset': `-${textAreaPadding}rem`};
     //   })
     // )
-
   }
 
   ngAfterViewInit(){
@@ -78,10 +77,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
-
-    this.studioStore.select(GetSelectedTextBlockPosition).subscribe(console.log);
   }
-
 
   ngOnDestroy(){
     this.unsubscribe.next()
@@ -102,6 +98,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       'font-weight':`${textBlock.fontWeight}`,
     };
   }
+
   public updateTextBlockPosition(id: string){
     let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
     let textBlock = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === id)
@@ -114,12 +111,17 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   }
   
   public setTextBlockPosition(position: Point){
-    let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
-    return{
+    // grab correct boundary size with width attribute rather than boundRect
+    let width = this.textBoundaryRef?.nativeElement.style.width
+    let height = this.textBoundaryRef?.nativeElement.style.height
+    let boundary = {
+      width: width?.substring(0,width.length - 2),
+      height: height?.substring(0,height.length - 2),
+    }
+    return {
       x: position.x * boundary?.width || 0,
       y: position.y * boundary?.height || 0,
     }
-    // return{x:0,y:0}
   }
 
   public updateTextBlockDimensions(id: string){
