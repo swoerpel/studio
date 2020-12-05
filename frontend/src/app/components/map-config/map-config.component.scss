@@ -18,6 +18,8 @@
         position: relative;
         width: 100%;
         height: 100%;
+        outline: dotted black 2px;
+
     }
 
 }
@@ -58,7 +60,7 @@
 }
 
 
-.text-box {
+.text-block {
     width: auto;
     background-color: transparent;
     color: black;

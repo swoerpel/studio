@@ -94,7 +94,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       x: bound.width * tb.position.x,
       y: bound.height * tb.position.y,
     }
-    let dimensions:Dim = {
+    let scaledDims:Dim = {
       width: bound.width * tb.dimensions.width,
       height: bound.height * tb.dimensions.height,
     }
@@ -102,9 +102,10 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       'position': 'absolute',
       'top': `${origin.y}px`,
       'left': `${origin.x}px`,
-      'width': `${dimensions.width}px`,
-      'height': `${dimensions.height}px`,
-      'font-size': `${dimensions.height}px`,
+      'white-space':'nowrap',
+      'width': `${scaledDims.width}px`,
+      'height': `${scaledDims.height}px`,
+      'font-size': `${scaledDims.height}px`,
       'letter-spacing':`${tb.letterSpacing}rem`,
       'padding': 0,
       'font-weight':`${tb.fontWeight}`,

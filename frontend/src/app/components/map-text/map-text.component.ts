@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnI
 import { FormControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { delay, map, skip, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { delay, first, map, skip, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
 import { Alignment, Dim, MapTextType, Point, TextBlock } from 'src/app/shared/models';
@@ -42,6 +42,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.textBlocks$ = this.studioStore.select(GetTextBlocks);
     this.selectedTextBlockId$ = this.studioStore.select(GetSelectedTextBlockId);
+
     this.studioStore.select(GetSelectedTextBlockValue).pipe(
       tap((text:string) => this.textBlockValueFormControl.patchValue(text,{emitEvent: false})),
       takeUntil(this.unsubscribe)
@@ -77,6 +78,12 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
+    this.selectedTextBlockId$.pipe(
+      first(),
+      tap((id: string)=>{
+        this.updateTextBlockDimensions(id)
+      })
+    ).subscribe();
   }
 
   ngOnDestroy(){
@@ -107,6 +114,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       x: (textBlock.x - boundary.x) / boundary.width,
       y: (textBlock.y - boundary.y) / boundary.height,
     }
+    console.log("updating position", position)
     this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
   }
   
@@ -128,11 +136,12 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
     let textBlock = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === id)
       ?.nativeElement.getBoundingClientRect();
-    let dimensions = {
-      x: textBlock.width / boundary.width,
-      y: textBlock.height / boundary.height,
+    let dimensions: Dim = {
+      width: textBlock.width / boundary.width,
+      height: textBlock.height / boundary.height,
     }
-    console.log('dimensions',dimensions)
+    console.log('new dimensions',dimensions)
+    this.studioStore.dispatch(StudioActions.SetTextBlockDimensions({id, dimensions}));
   }
 
   public updateFontSize(id,increase: boolean){

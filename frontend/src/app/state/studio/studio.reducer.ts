@@ -189,20 +189,20 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
-    // on(StudioActions.SetTextBlockPosition, (state, action): StudioState => {
-    //     return {
-    //         ...state,
-    //         textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
-    //             if(textBlock.id === action.id){
-    //                 return {
-    //                     ...textBlock,
-    //                     position: {...action.position}
-    //                 }
-    //             }
-    //             return textBlock;
-    //         })
-    //     }
-    // }),
+    on(StudioActions.SetTextBlockDimensions, (state, action): StudioState => {
+        return {
+            ...state,
+            textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
+                if(textBlock.id === action.id){
+                    return {
+                        ...textBlock,
+                        dimensions: {...action.dimensions}
+                    }
+                }
+                return textBlock;
+            })
+        }
+    }),
 
 
 );
