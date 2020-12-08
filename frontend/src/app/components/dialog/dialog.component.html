@@ -1,11 +1,11 @@
 <div class="dialog-container">
-    <h2 mat-dialog-title>{{data.title}}</h2>
-    <mat-dialog-content [ngSwitch]="data.component" class="dialog-content" >
+    <!-- <h2 mat-dialog-title>{{data.title}}</h2> -->
+    <div [ngSwitch]="data.component" class="dialog-content" >
         <app-map-color-palettes *ngSwitchCase="'app-map-color-palettes'"></app-map-color-palettes>
         <app-map-color-assignment *ngSwitchCase="'app-map-color-assignment'"></app-map-color-assignment>
         <app-map-text *ngSwitchCase="'app-map-text'"></app-map-text>
         <app-map-location *ngSwitchCase="'app-map-location'"></app-map-location>
-    </mat-dialog-content>
+    </div>
     <mat-dialog-actions>
       <button mat-raised-button mat-dialog-close>Cancel</button>
       <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial>Submit</button>

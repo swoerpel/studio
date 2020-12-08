@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
-import { Dim, Orientation } from 'src/app/shared/models';
+import { Dims, Orientation } from 'src/app/shared/models';
 import { StudioState} from './studio.reducer';
 
 const studioFeatureState = createFeatureSelector<StudioState>('studio');
@@ -30,7 +30,7 @@ export const GetBackgroundSize = createSelector(
     GetBackgroundSizeRatio,
     GetOrientation,
     (state: StudioState, aspectRatio, backgroundSizeRatio, orientation): any => {
-        let dims: Dim = {
+        let dims: Dims = {
             width: aspectRatio,
             height: 1 * backgroundSizeRatio,
         }

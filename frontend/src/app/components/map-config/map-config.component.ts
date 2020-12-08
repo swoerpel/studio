@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { Dim, Orientation, Point, TextBlock } from 'src/app/shared/models';
+import { Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetSelectedTextBlock, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
@@ -100,7 +100,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       x: bound.width * tb.position.x,
       y: bound.height * tb.position.y,
     }
-    let scaledDims:Dim = {
+    let scaledDims:Dims = {
       width: bound.width * tb.dimensions.width,
       height: bound.height * tb.dimensions.height,
     }
@@ -164,6 +164,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
+      minWidth: '100%', 
       data:{
         component: 'app-map-location',
         title: 'Adjust Map Location and Center'
@@ -176,6 +177,8 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
+      minWidth: DIALOG_CONTAINER.WIDTH,
+      minHeight: DIALOG_CONTAINER.HEIGHT,
       data:{
         component: 'app-map-text',
         title: 'Adjust Map Text'

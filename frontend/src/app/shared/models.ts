@@ -14,7 +14,7 @@ export interface PrintSize {
     name: string;
     aspectRatio: number;
     viewingDistance: number; // in feet for now
-    dims: Dim;
+    dims: Dims;
     type: string;
 }
 
@@ -25,10 +25,10 @@ export interface TextBlock{
     letterSpacing: number;
     fontWeight: number;
     position: Point;
-    dimensions: Dim;
+    dimensions: Dims;
 }
 
-export interface Dim{
+export interface Dims{
     width: number;
     height: number;
 }

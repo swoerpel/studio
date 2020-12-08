@@ -5,8 +5,8 @@ export const ASPECT_RATIOS =  [.647,.667,.675,.75,.8,1];
 export const BACKGROUND_RATIO_STEP_SIZE = 0.05;
 
 export const DIALOG_CONTAINER = {
-    WIDTH: '80%',
-    HEIGHT: '80%'
+    WIDTH: '98%',
+    HEIGHT: '98%'
 }
 
 export const DEFAULT_FONT_SIZE = 4;

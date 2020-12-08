@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, delay, first, map, skip, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
-import { Alignment, Dim, MapTextType, Point, TextBlock } from 'src/app/shared/models';
+import { Alignment, Dims, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockPosition, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
@@ -95,7 +95,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     // grab correct boundary size with width attribute rather than boundRect
     let width = this.textBoundaryRef?.nativeElement.style.width
     let height = this.textBoundaryRef?.nativeElement.style.height
-    let boundary: Dim = {
+    let boundary: Dims = {
       width: width?.substring(0,width.length - 2), //cut off 'px'
       height: height?.substring(0,height.length - 2),
     }
@@ -153,7 +153,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     let boundary = this.textBoundaryRef?.nativeElement.getBoundingClientRect();
     let textBlock = this.textBlocksRef?.find((block: any)=>block.nativeElement.id === id)
       ?.nativeElement.getBoundingClientRect();
-    let dimensions: Dim = {
+    let dimensions: Dims = {
       width: textBlock.width / boundary.width,
       height: textBlock.height / boundary.height,
     }
