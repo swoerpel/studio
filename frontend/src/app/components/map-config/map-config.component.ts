@@ -2,12 +2,12 @@ import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, 
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { Dim, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetSelectedTextBlock, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
@@ -51,7 +51,12 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
         tbs.reduce((obj,tb: TextBlock)=>({...obj,[tb.id]:this.calculateTextBlockStyle(tb)}),{})
       )
     )
-
+    this.studioStore.select(GetSelectedTextBlockValue).pipe(
+      switchMap(() => this.studioStore.select(GetSelectedTextBlock)),
+      tap(console.log),
+      tap((tb: TextBlock)=>this.calculateTextBlockStyle(tb)),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
     this.studioStore.select(GetBackgroundSizeRatio).pipe(
       tap((backgroundSizeRatio) => {
         this.backgroundSizeRatio = backgroundSizeRatio
@@ -88,6 +93,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   public calculateTextBlockStyle(tb: TextBlock){
+    // console.log('calcuating style',tb)
     if(!this?.textBoundaryRef){return;}
     let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
     let origin:Point = {
@@ -98,6 +104,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       width: bound.width * tb.dimensions.width,
       height: bound.height * tb.dimensions.height,
     }
+    // console.log("LEFT",origin.x,'WIDTH',scaledDims.width)
     return {
       'position': 'absolute',
       'top': `${origin.y}px`,

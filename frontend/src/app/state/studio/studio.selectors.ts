@@ -54,6 +54,11 @@ export const GetSelectedTextBlockId = createSelector(
     (state: StudioState): any => state.selectedTextBlockId
 )
 
+export const GetSelectedTextBlock = createSelector(
+    studioFeatureState,
+    (state: StudioState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))
+)
+
 export const GetSelectedTextBlockValue = createSelector(
     studioFeatureState,
     (state: StudioState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))?.text

@@ -6,7 +6,7 @@
                     (click)="setSelectedTextBlock(tb.id)"
                     (cdkDragEnded)="updateTextBlockPosition(tb.id)"
                     (cdkDragStarted)="setSelectedTextBlock(tb.id)"
-                    [cdkDragFreeDragPosition]="setTextBlockPosition(tb.position)"
+                    [cdkDragFreeDragPosition]="toTextBlockPixelPosition(tb.position)"
 
 
                     [ngClass]="selectedId === tb.id ? 'selected' : ''"
@@ -106,49 +106,51 @@
                         <mat-icon >delete</mat-icon>
                     </button>
                 </div>
-                <div class="input-block input-block__column">
-                    <button (click)="alignText(selectedId, Alignment.HorizontalLeft)"
-                            matInput  
-							mat-raised-button
-                            matTooltip="align horizontal left"
-                            [matTooltipPosition]="'above'" >
-                        <mat-icon >align_horizontal_left</mat-icon>
-                    </button>
-                    <button (click)="alignText(selectedId, Alignment.VerticalTop)" 
-							mat-raised-button
-                            matTooltip="align vertical top"
-                            [matTooltipPosition]="'below'" >
-                        <mat-icon >align_vertical_top</mat-icon>
-                    </button>
-                </div>
-                <div class="input-block input-block__column">
-                    <button (click)="alignText(selectedId, Alignment.HorizontalCenter)" 
-							mat-raised-button
-                            matTooltip="align horizontal center"
-                            [matTooltipPosition]="'above'" >
-                        <mat-icon >align_horizontal_center</mat-icon>
-                    </button>
-                    <button (click)="alignText(selectedId, Alignment.VerticalCenter)" 
-							mat-raised-button
-                            matTooltip="align vertical center"
-                            [matTooltipPosition]="'below'" >
-                        <mat-icon >align_vertical_center</mat-icon>
-                    </button>
-                </div>
-                <div class="input-block input-block__column">
-                    <button (click)="alignText(selectedId, Alignment.HorizontalRight)" 
-							mat-raised-button
-                            matTooltip="align horizontal right"
-                            [matTooltipPosition]="'above'" >
-                        <mat-icon >align_horizontal_right</mat-icon>
-                    </button>
-                    <button (click)="alignText(selectedId, Alignment.VerticalBottom)" 
-							mat-raised-button
-                            matTooltip="align vertical bottom"
-                            [matTooltipPosition]="'below'" >
-                        <mat-icon >align_vertical_bottom</mat-icon>
-                    </button>
-                </div>
+                <ng-container *ngIf="(selectedTextBlockPosition$ | async) as position">
+                    <div class="input-block input-block__column">
+                        <button (click)="alignText(selectedId, Alignment.HorizontalLeft,position)"
+                                matInput  
+                                mat-raised-button
+                                matTooltip="align horizontal left"
+                                [matTooltipPosition]="'above'" >
+                            <mat-icon >align_horizontal_left</mat-icon>
+                        </button>
+                        <button (click)="alignText(selectedId, Alignment.VerticalTop,position)" 
+                                mat-raised-button
+                                matTooltip="align vertical top"
+                                [matTooltipPosition]="'below'" >
+                            <mat-icon >align_vertical_top</mat-icon>
+                        </button>
+                    </div>
+                    <div class="input-block input-block__column">
+                        <button (click)="alignText(selectedId, Alignment.HorizontalCenter,position)" 
+                                mat-raised-button
+                                matTooltip="align horizontal center"
+                                [matTooltipPosition]="'above'" >
+                            <mat-icon >align_horizontal_center</mat-icon>
+                        </button>
+                        <button (click)="alignText(selectedId, Alignment.VerticalCenter,position)" 
+                                mat-raised-button
+                                matTooltip="align vertical center"
+                                [matTooltipPosition]="'below'" >
+                            <mat-icon >align_vertical_center</mat-icon>
+                        </button>
+                    </div>
+                    <div class="input-block input-block__column">
+                        <button (click)="alignText(selectedId, Alignment.HorizontalRight,position)" 
+                                mat-raised-button
+                                matTooltip="align horizontal right"
+                                [matTooltipPosition]="'above'" >
+                            <mat-icon >align_horizontal_right</mat-icon>
+                        </button>
+                        <button (click)="alignText(selectedId, Alignment.VerticalBottom,position)" 
+                                mat-raised-button
+                                matTooltip="align vertical bottom"
+                                [matTooltipPosition]="'below'" >
+                            <mat-icon >align_vertical_bottom</mat-icon>
+                        </button>
+                    </div>
+                </ng-container>
             </div>
         </ng-container>
     </div>
