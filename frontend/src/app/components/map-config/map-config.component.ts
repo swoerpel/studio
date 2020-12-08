@@ -1,15 +1,15 @@
 import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
-import { map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import { debounceTime, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { StudioActions } from 'src/app/state/studio/actions';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
 import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetSelectedTextBlock, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
 import { DialogComponent } from '../dialog/dialog.component';
-
+import { last } from 'lodash';
 @Component({
   selector: 'app-map-config',
   templateUrl: './map-config.component.html',
@@ -46,14 +46,21 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   ngOnInit(): void {
     this.textBlocks$ = this.studioStore.select(GetTextBlocks);//combineLatest([
-    this.textBlockStyles$ = this.textBlocks$.pipe(
+
+    this.textBlockStyles$ = combineLatest([
+      this.studioStore.select(GetOrientation),
+      this.studioStore.select(GetBackgroundSizeRatio),
+      this.studioStore.select(GetAspectRatio),
+      this.studioStore.select(GetTextBlocks),
+    ]).pipe(
+      map(last),
       map((tbs: TextBlock[]) =>
         tbs.reduce((obj,tb: TextBlock)=>({...obj,[tb.id]:this.calculateTextBlockStyle(tb)}),{})
-      )
+      ),
     )
+
     this.studioStore.select(GetSelectedTextBlockValue).pipe(
       switchMap(() => this.studioStore.select(GetSelectedTextBlock)),
-      tap(console.log),
       tap((tb: TextBlock)=>this.calculateTextBlockStyle(tb)),
       takeUntil(this.unsubscribe)
     ).subscribe();
@@ -129,9 +136,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   public setAspectRatio(aspectRatio: number, dispatchAction: boolean = true){
-    if(dispatchAction){
-      this.studioStore.dispatch(StudioActions.SetAspectRatio({aspectRatio}))
-    }
     let mapContainer: ClientRect = this.mapZoneRef.getBoundingClientRect();
     let newHeight = mapContainer.height * 0.95;
     let newWidth = newHeight  * aspectRatio;
@@ -141,6 +145,9 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     }else if(this.orientation == Orientation.Landscape){
       this.mapContainerRef.style.width = `${newHeight}px`
       this.mapContainerRef.style.height = `${newWidth}px`
+    }
+    if(dispatchAction){
+      this.studioStore.dispatch(StudioActions.SetAspectRatio({aspectRatio}))
     }
   }
 
@@ -156,7 +163,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     if(dispatchAction){
       this.studioStore.dispatch(StudioActions.SetBackgroundSizeRatio({backgroundSizeRatio: this.backgroundSizeRatio}))
     }
-    
   }
 
   public configureMapLocation(){
@@ -164,7 +170,8 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       DialogComponent, {
       width: DIALOG_CONTAINER.WIDTH,
       height: DIALOG_CONTAINER.HEIGHT,
-      minWidth: '100%', 
+      minWidth: DIALOG_CONTAINER.WIDTH,
+      minHeight: DIALOG_CONTAINER.HEIGHT,
       data:{
         component: 'app-map-location',
         title: 'Adjust Map Location and Center'

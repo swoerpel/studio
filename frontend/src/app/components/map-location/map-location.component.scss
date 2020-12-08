@@ -1,0 +1,32 @@
+::ng-deep .mat-tooltip {
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+}
+
+:host{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    
+}
+
+.column{
+    background-color: darkgrey;
+    &__location-map{
+        flex: 4;
+        width: 100%;
+        background-color: lightgrey;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    &__location-options{
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        padding: 0 1rem;
+    }
+}
