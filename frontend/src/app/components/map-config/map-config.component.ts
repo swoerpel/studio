@@ -54,6 +54,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       this.studioStore.select(GetTextBlocks),
     ]).pipe(
       map(last),
+      tap(() =>console.log('update')),
       map((tbs: TextBlock[]) =>
         tbs.reduce((obj,tb: TextBlock)=>({...obj,[tb.id]:this.calculateTextBlockStyle(tb)}),{})
       ),
@@ -100,7 +101,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   public calculateTextBlockStyle(tb: TextBlock){
-    // console.log('calcuating style',tb)
     if(!this?.textBoundaryRef){return;}
     let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();
     let origin:Point = {
@@ -111,7 +111,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       width: bound.width * tb.dimensions.width,
       height: bound.height * tb.dimensions.height,
     }
-    // console.log("LEFT",origin.x,'WIDTH',scaledDims.width)
     return {
       'position': 'absolute',
       'top': `${origin.y}px`,
@@ -124,7 +123,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       'padding': 0,
       'font-weight':`${tb.fontWeight}`,
     };
-
   }
 
   public setOrientation(orientation: Orientation, dispatchAction: boolean = true){

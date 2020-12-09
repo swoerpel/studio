@@ -1,32 +1,93 @@
+$button-background-color:  rgb(43, 43, 43);
+$button-text-color:  white;
+
 ::ng-deep .mat-tooltip {
     font-size: 1.5rem;
     padding: 0.5rem 1rem;
 }
 
+.text-input{
+    outline: none;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+    &__city-search{ flex: 4; }
+    &__readonly{
+        flex: 1;
+        background-color: rgb(202, 202, 202);
+        cursor: default;
+    }
+}
+
+.button{
+    background-color: $button-background-color;
+    outline: none;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    mat-icon{ color: $button-text-color; }
+    &:active{
+        mat-icon { color: $button-background-color; }
+        background-color: $button-text-color;
+    }
+}
+
+.selected-tab{
+    mat-icon { color: $button-background-color; }
+    background-color: $button-text-color;
+}
+
+// layout
 :host{
     display: flex;
     height: 100%;
     width: 100%;
     overflow: hidden;
-    
 }
 
 .column{
-    background-color: darkgrey;
-    &__location-map{
-        flex: 4;
-        width: 100%;
-        background-color: lightgrey;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
+    display: flex;
+    flex-direction: column;
+    &__header{ //shared by both
+        flex: 0;
+        flex-direction: row;
+        button { flex: 1; border-radius: 0; }
     }
 
-    &__location-options{
+    &__map{
+        flex: 2;
+        &--display{
+            flex: 5;
+            background-color: lightblue;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+
+        }
+    }
+
+    &__options{
         flex: 1;
-        display: flex;
-        flex-direction: row;
-        padding: 0 1rem;
+        background-color: coral;
+        &--active-tab{
+
+        }
+    }
+}
+
+
+.tab{
+    background-color:white;
+    height: 100%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    &__markers{
+        
+    }
+
+    &__routes{
     }
 }
