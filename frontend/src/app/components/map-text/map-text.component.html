@@ -8,7 +8,6 @@
                     (cdkDragStarted)="setSelectedTextBlock(tb.id)"
                     [cdkDragFreeDragPosition]="toTextBlockPixelPosition(tb.position)"
 
-
                     [ngClass]="selectedId === tb.id ? 'selected' : ''"
                     [ngStyle]="setSelectedTextBlockStyle(tb)"
                     [attr.id]="tb.id"

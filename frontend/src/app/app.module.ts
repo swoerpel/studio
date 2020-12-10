@@ -25,6 +25,8 @@ import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StudioEffects } from './state/studio/studio.effects';
 import { studioReducer } from './state/studio/studio.reducer';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AgmCoreModule } from '@agm/core';
+import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/google-maps-autocomplete';
 
 @NgModule({
   declarations: [
@@ -58,6 +60,11 @@ import { ReactiveFormsModule } from '@angular/forms';
       maxAge: 25,
     }),
     StoreRouterConnectingModule.forRoot(),
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyBcEArLj7I5WyhLDHT_9krt8DshG5sfqWA',
+      libraries: ["places"]
+    }),
+    MatGoogleMapsAutocompleteModule,
     ReactiveFormsModule,
   ],
   providers: [],

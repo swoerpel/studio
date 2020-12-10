@@ -21,6 +21,7 @@ export const MAX_FONT_WEIGHT = 500;
 export const FONT_WEIGHT_INCREMENT = 100;
 
 export const MAP_TEXT_BOUNDARY_SIZE = 0.98;
+export const MAP_LOCATION_BOUNDARY_SIZE = 0.98;
 
 export const PRINT_SIZES: PrintSize[] = [
     {

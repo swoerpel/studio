@@ -5,13 +5,31 @@
                 [matTooltipPosition]="'below'" >
             <mat-icon class="button-icon">landscape</mat-icon>
         </button>   
-        <input class="text-input text-input__city-search" type="text" placeholder="search city">
+        <input (onAutocompleteSelected)="searchPlace($event)" 
+               matGoogleMapsAutocomplete 
+               class="text-input text-input__city-search" 
+               type="text" 
+               placeholder="search city" >
         <input class="text-input text-input__readonly" type="text" placeholder="lat" readonly>
         <input class="text-input text-input__readonly" type="text" placeholder="lng" readonly>
         <input class="text-input text-input__readonly" type="text" placeholder="zoom" readonly>
     </div>
-    <div class="column column__map column__map--display">
-        Map Display
+    <div class="column column__map column__map--display"  #mapBoundary>
+        <!-- <div class="map-boundary" #mapBoundary> -->
+            <agm-map 
+                    (zoomChange)="zoomChange($event)"
+                    (centerChange)="centerChange($event)"
+                    (boundsChange)="boundsChange($event)"
+                    [latitude]="lat" 
+                    [longitude]="lng" 
+                    [zoom]="zoom"
+                    [styles]="styles"
+                    [mapDraggable]="true"
+                    [disableDefaultUI]="true" 
+                    [mapTypeId]="'terrain'"
+                    #map>
+            </agm-map>
+        <!-- </div> -->
     </div>
     
 </div>
@@ -20,21 +38,27 @@
     <div class="column column__header">
         <button (click)="activeTab = Tab.Markers"
                 [ngClass]="activeTab === Tab.Markers ? 'selected-tab' : ''"
-                class="button"
-                matTooltip="edit markers"
-                [matTooltipPosition]="'below'" >
+                class="button" >
             <mat-icon class="button-icon">add_location</mat-icon>
         </button>   
         <button (click)="activeTab = Tab.Routes"
                 [ngClass]="activeTab === Tab.Routes ? 'selected-tab' : ''"
-                class="button"
-                matTooltip="edit routes"
-                [matTooltipPosition]="'below'" >
+                class="button" >
             <mat-icon class="button-icon">directions</mat-icon>
         </button>   
     </div>
     <div [ngSwitch]="activeTab" class="column column__options column__options--active-tab">
-        <div *ngSwitchCase="Tab.Markers" class="tab tab__markers">Markers Tab</div>
+        <div *ngSwitchCase="Tab.Markers" class="tab tab__markers">
+            <div class="tab tab__markers tab__markers--symbols">
+                Symbols
+            </div>
+            <div class="tab tab__markers tab__markers--controls">
+                Controls
+            </div>
+            <div class="tab tab__markers tab__markers--list">
+                List
+            </div>
+        </div>
         <div *ngSwitchCase="Tab.Routes" class="tab tab__routes">Routes Tab</div>
     </div>
 </div>
