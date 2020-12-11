@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { tap, takeUntil, map } from 'rxjs/operators';
 import { MAP_LOCATION_BOUNDARY_SIZE, MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetBackgroundSize } from 'src/app/state/studio/studio.selectors';
+import { GetBackgroundSize, GetMapDisplaySize } from 'src/app/state/studio/studio.selectors';
 
 enum Tab{
   Markers,
@@ -41,40 +41,36 @@ export class MapLocationComponent implements OnInit {
   }
 
   ngAfterViewInit(){
-    this.studioStore.select(GetBackgroundSize).pipe(
-      map((maxRatio: number)=>1 - maxRatio),
-      tap((maxRatio)=>{
-        console.log('maxRatio',maxRatio)
-        // let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.column.column__map.column__map--display');
-        // let boundaryContainer: ClientRect = boundaryContainerRef?.getBoundingClientRect();
+    this.studioStore.select(GetMapDisplaySize).pipe(
+      tap((ratio)=>{
         if(!document.querySelector('boundary-div')){
+          let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.column.column__map.column__map--display');
+          let boundaryContainer = boundaryContainerRef?.getBoundingClientRect();
+          let newWidth = boundaryContainer.width * MAP_LOCATION_BOUNDARY_SIZE;
+          let newHeight = newWidth * ratio;
+          if(newHeight > boundaryContainer.height){
+            newHeight = boundaryContainer.height * MAP_LOCATION_BOUNDARY_SIZE;
+            newWidth = newHeight * (1 / ratio);
+          }
+          // console.log('displayRatio',ratio)
+          // console.log('newWidth',Math.round(newWidth))
+          // console.log('bound.width',Math.round(boundaryContainer.width))
+          // console.log('newHeight',Math.round(newHeight))
+          // console.log('bound.height',Math.round(boundaryContainer.height))
           let newDiv = document.createElement('div');
           newDiv.className = 'chet';
           newDiv.style.position = 'absolute';
-          newDiv.style.top = '0px';
-          newDiv.style.left = '0px';
-          newDiv.style.width = '300px';
-          newDiv.style.height = '300px';
-          newDiv.style['background-color'] = 'red';
+          newDiv.style.top = `${(boundaryContainer.height - newHeight) / 2}`;
+          newDiv.style.left = `${(boundaryContainer.width - newWidth) / 2}px`;
+          newDiv.style.width = `${newWidth}px`;
+          newDiv.style.height = `${newHeight}px`;
+          newDiv.style.outline = 'dotted black 2px';
+          newDiv.style['pointer-events'] = 'none';
+          newDiv.style['background-color'] = 'transparent';
           newDiv.style['z-index'] = '1000';
           let container = document.querySelector('div.column.column__map.column__map--display')
           container.append(newDiv);
         }
-        
-        // boundaryContainerRef.nativeElement.append(newDiv);
-        // console.log("boundaryContainer",boundaryContainer)
-        // let newHeight = boundaryContainer.height * MAP_LOCATION_BOUNDARY_SIZE;
-        // let newWidth = newHeight * maxRatio;
-        // if(newHeight > boundaryContainer.height){
-        //   newHeight = boundaryContainer.height * MAP_TEXT_BOUNDARY_SIZE;
-        //   newWidth = newHeight * (1 / maxRatio);
-        // }
-        // console.log('newWidth',newWidth,'newHeight',newHeight)
-
-        // this.mapBoundaryRef.nativeElement.style.width = `${newWidth}px`;
-        // this.mapBoundaryRef.nativeElement.style.height = `${newHeight}px`;
-        // this.mapBoundaryRef.nativeElement.style.top = `${5}px`;
-        // this.mapBoundaryRef.nativeElement.style.left = `${5}px`;
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();

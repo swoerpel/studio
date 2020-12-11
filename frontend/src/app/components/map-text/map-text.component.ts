@@ -63,14 +63,15 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
 
   ngAfterViewInit(){
     this.studioStore.select(GetBackgroundSize).pipe(
-      tap((maxRatio)=>{
+      tap((ratio)=>{
+        console.log('ratio',ratio)
         let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.row.row__text-area');
         let boundaryContainer: ClientRect = boundaryContainerRef?.getBoundingClientRect();
         let newWidth = boundaryContainer.width * MAP_TEXT_BOUNDARY_SIZE;
-        let newHeight = newWidth * maxRatio;
+        let newHeight = newWidth * ratio;
         if(newHeight > boundaryContainer.height){
           newHeight = boundaryContainer.height * MAP_TEXT_BOUNDARY_SIZE;
-          newWidth = newHeight * (1 / maxRatio);
+          newWidth = newHeight * (1 / ratio);
         }
         this.textBoundaryRef.nativeElement.style.width = `${newWidth}px`;
         this.textBoundaryRef.nativeElement.style.height = `${newHeight}px`;

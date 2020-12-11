@@ -44,6 +44,21 @@ export const GetBackgroundSize = createSelector(
     }
 )
 
+export const GetMapDisplaySize = createSelector(
+    studioFeatureState,
+    GetAspectRatio,
+    GetBackgroundSizeRatio,
+    GetOrientation,
+    (state: StudioState, aspectRatio, backgroundSizeRatio, orientation): any => {
+        let dims: Dims = {
+            width: aspectRatio,
+            height: 1 * (1 - backgroundSizeRatio),
+        }
+        return dims.height / dims.width;
+        // return (dims.width > dims.height) ? dims.height / dims.width : 1
+    }
+)
+
 export const GetTextBlocks = createSelector(
     studioFeatureState,
     (state: StudioState): any => state.textBlocks
