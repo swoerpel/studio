@@ -19,11 +19,6 @@ export const GetOrientation = createSelector(
     (state: StudioState): any => state.orientation
 )
 
-// export const GetTextAreaPadding = createSelector(
-//     studioFeatureState,
-//     (state: StudioState): any => state.textAreaPadding
-// )
-
 export const GetBackgroundSize = createSelector(
     studioFeatureState,
     GetAspectRatio,
@@ -53,9 +48,14 @@ export const GetMapDisplaySize = createSelector(
         let dims: Dims = {
             width: aspectRatio,
             height: 1 * (1 - backgroundSizeRatio),
+        } 
+        if(orientation === Orientation.Landscape){
+            dims = {
+                width: 1,
+                height: aspectRatio * (1 - backgroundSizeRatio),
+            }
         }
         return dims.height / dims.width;
-        // return (dims.width > dims.height) ? dims.height / dims.width : 1
     }
 )
 
