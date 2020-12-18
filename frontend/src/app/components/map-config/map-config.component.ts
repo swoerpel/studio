@@ -6,21 +6,12 @@ import { debounceTime, map, switchMap, takeUntil, tap, withLatestFrom } from 'rx
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { TextActions } from 'src/app/state/text/actions';
+import { TextSelectors } from 'src/app/state/text/selectors';
 import { TextState } from 'src/app/state/text/text.reducer';
-import { 
-  GetAspectRatio, 
-  GetBackgroundSizeRatio, 
-  GetOrientation, 
-} from 'src/app/state/map/map.selectors';
-import { 
-  GetSelectedTextBlock, 
-  GetSelectedTextBlockId, 
-  GetSelectedTextBlockValue, 
-  GetTextBlocks 
-} from 'src/app/state/text/text.selectors';
+import { MapSelectors } from 'src/app/state/map/selectors';
 import { DialogComponent } from '../dialog/dialog.component';
 import { last } from 'lodash';
-import { MapState } from 'src/app/state/map/Map.reducer';
+import { MapState } from 'src/app/state/map/map.reducer';
 import { MapActions } from 'src/app/state/map/actions';
 @Component({
   selector: 'app-map-config',
@@ -58,18 +49,18 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.textBlocks$ = this.textStore.select(GetTextBlocks);
-    this.textStore.select(GetSelectedTextBlockValue).pipe(
-      switchMap(() => this.textStore.select(GetSelectedTextBlock)),
+    this.textBlocks$ = this.textStore.select(TextSelectors.GetTextBlocks);
+    this.textStore.select(TextSelectors.GetSelectedTextBlockValue).pipe(
+      switchMap(() => this.textStore.select(TextSelectors.GetSelectedTextBlock)),
       tap((tb: TextBlock)=>this.calculateTextBlockStyle(tb)),
       takeUntil(this.unsubscribe)
     ).subscribe();
 
     this.textBlockStyles$ = combineLatest([
-      this.mapStore.select(GetOrientation),
-      this.mapStore.select(GetBackgroundSizeRatio),
-      this.mapStore.select(GetAspectRatio),
-      this.textStore.select(GetTextBlocks),
+      this.mapStore.select(MapSelectors.GetOrientation),
+      this.mapStore.select(MapSelectors.GetBackgroundSizeRatio),
+      this.mapStore.select(MapSelectors.GetAspectRatio),
+      this.textStore.select(TextSelectors.GetTextBlocks),
     ]).pipe(
       map(last),
       map((tbs: TextBlock[]) =>
@@ -77,19 +68,19 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       ),
     )
 
-    this.mapStore.select(GetBackgroundSizeRatio).pipe(
+    this.mapStore.select(MapSelectors.GetBackgroundSizeRatio).pipe(
       tap((backgroundSizeRatio) => {
         this.backgroundSizeRatio = backgroundSizeRatio
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
-    this.mapStore.select(GetAspectRatio).pipe(
+    this.mapStore.select(MapSelectors.GetAspectRatio).pipe(
       tap((aspectRatio) => {
         this.aspectRatio = aspectRatio;
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
-    this.mapStore.select(GetOrientation).pipe(
+    this.mapStore.select(MapSelectors.GetOrientation).pipe(
       tap((orientation) => {
         this.orientation = orientation;
       }),
@@ -139,7 +130,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   public setOrientation(orientation: Orientation, dispatchAction: boolean = true){
     if(dispatchAction){
-      this.textStore.dispatch(MapActions.SetOrientation({orientation}))
+      this.mapStore.dispatch(MapActions.SetOrientation({orientation}))
     }
     this.orientation = orientation;
     this.setAspectRatio(this.aspectRatio);
@@ -157,7 +148,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       this.mapContainerRef.style.height = `${newWidth}px`
     }
     if(dispatchAction){
-      this.textStore.dispatch(MapActions.SetAspectRatio({aspectRatio}))
+      this.mapStore.dispatch(MapActions.SetAspectRatio({aspectRatio}))
     }
   }
 
@@ -171,7 +162,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     this.mapBackgroundRef.style.flex = this.backgroundSizeRatio
     this.mapDisplayRef.style.flex = (1 - this.backgroundSizeRatio);
     if(dispatchAction){
-      this.textStore.dispatch(MapActions.SetBackgroundSizeRatio({backgroundSizeRatio: this.backgroundSizeRatio}))
+      this.mapStore.dispatch(MapActions.SetBackgroundSizeRatio({backgroundSizeRatio: this.backgroundSizeRatio}))
     }
   }
 

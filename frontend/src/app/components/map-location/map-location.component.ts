@@ -4,8 +4,14 @@ import { Subject } from 'rxjs';
 import { tap, takeUntil, map } from 'rxjs/operators';
 import { MAP_LOCATION_BOUNDARY_SIZE, MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { LocationState } from 'src/app/state/location/location.reducer';
-import { GetBackgroundSize, GetMapDisplaySize } from 'src/app/state/text/text.selectors';
-
+import { LocationActions } from 'src/app/state/location/actions';
+import { LocationSelectors } from 'src/app/state/location/selectors';
+import { MapSelectors } from 'src/app/state/map/selectors';
+import { MapState } from 'src/app/state/map/map.reducer';
+import { FormControl, FormGroup } from '@angular/forms';
+import { LatLng } from 'src/app/shared/models';
+import { formatLatLngText } from 'src/app/shared/helpers';
+import { head, last } from 'lodash';
 enum Tab{
   Markers,
   Routes
@@ -30,18 +36,37 @@ export class MapLocationComponent implements OnInit {
   public lng = -89.4012;
   public zoom = 14;
 
+  public centerFormGroup = new FormGroup({
+    lat: new FormControl(),
+    lng: new FormControl(),
+  })
+
+  public zoomFormControl = new FormControl();
+
+
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
+    private mapStore: Store<MapState>,
     private locationStore: Store<LocationState>,
     private elementRef: ElementRef,
   ) { }
 
   ngOnInit(): void {
+    this.locationStore.select(LocationSelectors.GetCenter).pipe(
+      map((latLng: LatLng) => formatLatLngText(latLng.lat,latLng.lng)),
+      map((t) => ({lat:head(t),lng:last(t)})),
+      tap((latLng) => this.centerFormGroup.patchValue(latLng)),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
+    this.locationStore.select(LocationSelectors.GetZoom).pipe(
+      tap((zoom: number)=> this.zoomFormControl.patchValue(zoom)),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
   }
 
   ngAfterViewInit(){
-    this.locationStore.select(GetMapDisplaySize).pipe(
+    this.mapStore.select(MapSelectors.GetMapDisplaySize).pipe(
       tap((ratio)=>{
         if(!document.querySelector('boundary-div')){
           let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.column.column__map.column__map--display');
@@ -52,11 +77,6 @@ export class MapLocationComponent implements OnInit {
             newHeight = boundaryContainer.height * MAP_LOCATION_BOUNDARY_SIZE;
             newWidth = newHeight * (1 / ratio);
           }
-          // console.log('displayRatio',ratio)
-          // console.log('newWidth',Math.round(newWidth))
-          // console.log('bound.width',Math.round(boundaryContainer.width))
-          // console.log('newHeight',Math.round(newHeight))
-          // console.log('bound.height',Math.round(boundaryContainer.height))
           let newDiv = document.createElement('div');
           newDiv.className = 'chet';
           newDiv.style.position = 'absolute';
@@ -85,12 +105,13 @@ export class MapLocationComponent implements OnInit {
     console.log("place",place)
   }
 
-  centerChange(center){
-
+  centerChange(center: LatLng){
+    this.locationStore.dispatch(LocationActions.SetCenter({center}))
   }
 
-  zoomChange(zoom){
-
+  zoomChange(zoom: number){
+    console.log("zoom",zoom)
+    this.locationStore.dispatch(LocationActions.SetZoom({zoom}))
   }
 
   boundsChange(bounds){

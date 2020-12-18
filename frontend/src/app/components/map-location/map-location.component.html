@@ -10,9 +10,9 @@
                class="text-input text-input__city-search" 
                type="text" 
                placeholder="search city" >
-        <input class="text-input text-input__readonly" type="text" placeholder="lat" readonly>
-        <input class="text-input text-input__readonly" type="text" placeholder="lng" readonly>
-        <input class="text-input text-input__readonly" type="text" placeholder="zoom" readonly>
+        <input [formControl]="centerFormGroup.controls.lat" class="text-input text-input__readonly" type="text" placeholder="lat" readonly>
+        <input [formControl]="centerFormGroup.controls.lng" class="text-input text-input__readonly" type="text" placeholder="lng" readonly>
+        <input [formControl]="zoomFormControl" class="text-input text-input__readonly" type="text" placeholder="zoom" readonly>
     </div>
     <div class="column column__map column__map--display"  #mapBoundary>
         <!-- <div class="map-boundary" #mapBoundary> -->

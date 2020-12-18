@@ -33,9 +33,6 @@ import { TextEffects } from './state/text/text.effects';
 import { LocationEffects } from './state/location/location.effects';
 import { ColorEffects } from './state/color/color.effects';
 
-
-
-
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgmCoreModule } from '@agm/core';
 import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/google-maps-autocomplete';

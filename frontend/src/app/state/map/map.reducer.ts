@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
 import { Orientation } from "src/app/shared/models";
-import { MapActions } from './actions';
+import { MapActions } from "./actions";
 
 export interface MapState {
     backgroundSizeRatio: number;

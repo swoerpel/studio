@@ -1,7 +1,12 @@
 import {createAction, props} from '@ngrx/store';
-import { Alignment, Dims, Orientation, Point } from 'src/app/shared/models';
+import { Alignment, Dims, LatLng, Orientation, Point } from 'src/app/shared/models';
 
-// export const SetBackgroundSizeRatio = createAction(
-//     '[Location] Default',
-//     props<{param: number}>()
-// )
+export const SetCenter = createAction(
+    '[Location] Set Center',
+    props<{center: LatLng}>()
+)
+
+export const SetZoom = createAction(
+    '[Location] Set Zoom',
+    props<{zoom: number}>()
+)

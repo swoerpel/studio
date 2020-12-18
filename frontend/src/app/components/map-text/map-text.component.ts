@@ -8,8 +8,10 @@ import { makeid } from 'src/app/shared/helpers';
 import { Alignment, Dims, MapTextType, Point, TextBlock } from 'src/app/shared/models';
 import { TextActions } from 'src/app/state/text/actions';
 import { TextState } from 'src/app/state/text/text.reducer';
-import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockPosition, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/text/text.selectors';
+import { TextSelectors } from 'src/app/state/text/selectors';
 import { head } from 'lodash';
+import { MapSelectors } from 'src/app/state/map/selectors';
+import { MapState } from 'src/app/state/map/map.reducer';
 @Component({
   selector: 'app-map-text',
   templateUrl: './map-text.component.html',
@@ -35,15 +37,16 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
 
   constructor(
     private textStore: Store<TextState>,
+    private mapStore: Store<MapState>,
     private elementRef: ElementRef,
   ) { }
 
   ngOnInit(): void {
-    this.textBlocks$ = this.textStore.select(GetTextBlocks);
-    this.selectedTextBlockId$ = this.textStore.select(GetSelectedTextBlockId);
-    this.selectedTextBlockPosition$ = this.textStore.select(GetSelectedTextBlockPosition);
+    this.textBlocks$ = this.textStore.select(TextSelectors.GetTextBlocks);
+    this.selectedTextBlockId$ = this.textStore.select(TextSelectors.GetSelectedTextBlockId);
+    this.selectedTextBlockPosition$ = this.textStore.select(TextSelectors.GetSelectedTextBlockPosition);
 
-    this.textStore.select(GetSelectedTextBlockValue).pipe(
+    this.textStore.select(TextSelectors.GetSelectedTextBlockValue).pipe(
       tap((text:string) => this.textBlockValueFormControl.patchValue(text,{emitEvent: false})),
       takeUntil(this.unsubscribe)
     ).subscribe();
@@ -62,9 +65,8 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(){
-    this.textStore.select(GetBackgroundSize).pipe(
+    this.mapStore.select(MapSelectors.GetBackgroundSize).pipe(
       tap((ratio)=>{
-        console.log('ratio',ratio)
         let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.row.row__text-area');
         let boundaryContainer: ClientRect = boundaryContainerRef?.getBoundingClientRect();
         let newWidth = boundaryContainer.width * MAP_TEXT_BOUNDARY_SIZE;
