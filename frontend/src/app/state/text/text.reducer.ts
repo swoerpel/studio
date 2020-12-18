@@ -1,9 +1,17 @@
 import { createReducer, on } from "@ngrx/store";
-import { DEFAULT_FONT_SIZE, DEFAULT_FONT_WEIGHT, DEFAULT_LETTER_SPACING, FONT_SIZE_INCREMENT, FONT_WEIGHT_INCREMENT, LETTER_SPACING_SIZE_INCREMENT, MAX_FONT_WEIGHT, MIN_FONT_WEIGHT } from 'src/app/shared/constants';
-import { makeid } from 'src/app/shared/helpers';
-import { Orientation, TextBlock } from 'src/app/shared/models';
-import { StudioActions} from './actions';
-
+import { TextActions } from './actions';
+import { Orientation, TextBlock } from '../../shared/models';
+import { makeid } from '../../shared/helpers';
+import { 
+    DEFAULT_FONT_SIZE, 
+    DEFAULT_FONT_WEIGHT, 
+    DEFAULT_LETTER_SPACING, 
+    FONT_SIZE_INCREMENT, 
+    FONT_WEIGHT_INCREMENT, 
+    LETTER_SPACING_SIZE_INCREMENT, 
+    MAX_FONT_WEIGHT, 
+    MIN_FONT_WEIGHT 
+} from '../../shared/constants';
 
 const initialId = makeid();
 
@@ -18,99 +26,42 @@ const generateDefaultTextBlock = (
     fontWeight: DEFAULT_FONT_WEIGHT,
     position: {x:0,y:0},
     dimensions:{ width:0.389815255, height:0.231281 }
-    // positionRatios: { origin:{ x:0,y:0 }, dim:{ width:0.389815255, height:0.231281 }}
 });
 
 
-export interface StudioState {
-    backgroundSizeRatio: number;
-    aspectRatio: number;
-    orientation: Orientation;
-    // textAreaPadding: number;
-
+export interface TextState {
     selectedTextBlockId: string;
     textBlocks:TextBlock[];
 }
 
-const initialState: StudioState = {
-    backgroundSizeRatio: 0.2,
-    aspectRatio: 0.8,
-    // textAreaPadding: 3,
-    orientation: Orientation.Portrait,
+const initialState: TextState = {
     selectedTextBlockId:initialId,
     textBlocks: [generateDefaultTextBlock(initialId)]
 }
 
-export const studioReducer = createReducer<StudioState>(
+export const textReducer = createReducer<TextState>(
     initialState,
-
-    on(StudioActions.SetBackgroundSizeRatio, (state, action): StudioState => {
-        return {
-            ...state,
-            backgroundSizeRatio: action.backgroundSizeRatio,
-        }
-    }),
-    on(StudioActions.SetAspectRatio, (state, action): StudioState => {
-        return {
-            ...state,
-            aspectRatio: action.aspectRatio,
-        }
-    }),
-    on(StudioActions.SetOrientation, (state, action): StudioState => {
-        return {
-            ...state,
-            orientation: action.orientation,
-        }
-    }),
-    // on(StudioActions.SetTextAreaPadding, (state, action): StudioState => {
-    //     return {
-    //         ...state,
-    //         textAreaPadding: action.textAreaPadding,
-    //     }
-    // }),
-    on(StudioActions.CreateTextBlock, (state, action): StudioState => {
+    on(TextActions.CreateTextBlock, (state, action): TextState => {
         return {
             ...state,
             selectedTextBlockId: action.id,
             textBlocks: [...state.textBlocks, generateDefaultTextBlock(action.id, action.text)],
         }
     }),
-
-    on(StudioActions.DeleteTextBlock, (state, action): StudioState => {
+    on(TextActions.DeleteTextBlock, (state, action): TextState => {
         return {
             ...state,
             selectedTextBlockId: action.id,
             textBlocks: state.textBlocks.filter((tb: TextBlock) => tb.id !== action.id)
         }
     }),
-
-    on(StudioActions.SetSelectedTextBlockId, (state, action): StudioState => {
+    on(TextActions.SetSelectedTextBlockId, (state, action): TextState => {
         return {
             ...state,
             selectedTextBlockId: action.id,
         }
     }),
-
-    // on(StudioActions.SetTextBlockOrigin, (state, action): StudioState => {
-    //     return {
-    //         ...state,
-    //         textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
-    //             if(textBlock.id === action.id){
-    //                 return {
-    //                     ...textBlock,
-    //                     origin: {
-    //                         ...textBlock.origin,
-    //                         ...action.origin
-    //                     },
-    //                     // position: {...textBlock.position}
-    //                 }
-    //             }
-    //             return textBlock;
-    //         })
-    //     }
-    // }),
-
-    on(StudioActions.SetTextBlockValue, (state, action): StudioState => {
+    on(TextActions.SetTextBlockValue, (state, action): TextState => {
         return {
             ...state,
             textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
@@ -124,7 +75,7 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
-    on(StudioActions.UpdateTextBlockFontSize, (state, action): StudioState => {
+    on(TextActions.UpdateTextBlockFontSize, (state, action): TextState => {
         return {
             ...state,
             textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
@@ -140,7 +91,7 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
-    on(StudioActions.UpdateTextBlockLetterSpacing, (state, action): StudioState => {
+    on(TextActions.UpdateTextBlockLetterSpacing, (state, action): TextState => {
         return {
             ...state,
             textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
@@ -156,7 +107,7 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
-    on(StudioActions.UpdateTextBlockFontWeight, (state, action): StudioState => {
+    on(TextActions.UpdateTextBlockFontWeight, (state, action): TextState => {
         return {
             ...state,
             textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
@@ -175,7 +126,7 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
-    on(StudioActions.SetTextBlockPosition, (state, action): StudioState => {
+    on(TextActions.SetTextBlockPosition, (state, action): TextState => {
         return {
             ...state,
             textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{
@@ -189,7 +140,7 @@ export const studioReducer = createReducer<StudioState>(
             })
         }
     }),
-    on(StudioActions.SetTextBlockDimensions, (state, action): StudioState => {
+    on(TextActions.SetTextBlockDimensions, (state, action): TextState => {
         return {
             ...state,
             textBlocks: state.textBlocks.map((textBlock:TextBlock) =>{

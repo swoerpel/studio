@@ -6,9 +6,9 @@ import { debounceTime, delay, first, map, skip, takeUntil, tap, withLatestFrom }
 import { MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
 import { Alignment, Dims, MapTextType, Point, TextBlock } from 'src/app/shared/models';
-import { StudioActions } from 'src/app/state/studio/actions';
-import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockPosition, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { TextActions } from 'src/app/state/text/actions';
+import { TextState } from 'src/app/state/text/text.reducer';
+import { GetBackgroundSize, GetSelectedTextBlockId, GetSelectedTextBlockPosition, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/text/text.selectors';
 import { head } from 'lodash';
 @Component({
   selector: 'app-map-text',
@@ -34,16 +34,16 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
-    private studioStore: Store<StudioState>,
+    private textStore: Store<TextState>,
     private elementRef: ElementRef,
   ) { }
 
   ngOnInit(): void {
-    this.textBlocks$ = this.studioStore.select(GetTextBlocks);
-    this.selectedTextBlockId$ = this.studioStore.select(GetSelectedTextBlockId);
-    this.selectedTextBlockPosition$ = this.studioStore.select(GetSelectedTextBlockPosition);
+    this.textBlocks$ = this.textStore.select(GetTextBlocks);
+    this.selectedTextBlockId$ = this.textStore.select(GetSelectedTextBlockId);
+    this.selectedTextBlockPosition$ = this.textStore.select(GetSelectedTextBlockPosition);
 
-    this.studioStore.select(GetSelectedTextBlockValue).pipe(
+    this.textStore.select(GetSelectedTextBlockValue).pipe(
       tap((text:string) => this.textBlockValueFormControl.patchValue(text,{emitEvent: false})),
       takeUntil(this.unsubscribe)
     ).subscribe();
@@ -51,7 +51,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
     this.textBlockValueFormControl.valueChanges.pipe(
       withLatestFrom(this.selectedTextBlockId$),
       map(([text,id])=>({id,text})),
-      tap((payload)=>this.studioStore.dispatch(StudioActions.SetTextBlockValue(payload))),
+      tap((payload)=>this.textStore.dispatch(TextActions.SetTextBlockValue(payload))),
       // allows time for template to update so the new text is populated
       // when the text block dimensions are read
       debounceTime(100), 
@@ -62,7 +62,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(){
-    this.studioStore.select(GetBackgroundSize).pipe(
+    this.textStore.select(GetBackgroundSize).pipe(
       tap((ratio)=>{
         console.log('ratio',ratio)
         let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.row.row__text-area');
@@ -127,16 +127,16 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
 
   // INTERACT WITH STORE=====================================================================
   public createTextBlock(){
-    this.studioStore.dispatch(StudioActions.CreateTextBlock({
+    this.textStore.dispatch(TextActions.CreateTextBlock({
       id: makeid(),
       text: 'sample',
     }))
   }
   public deleteTextBlock(id: string){
-    this.studioStore.dispatch(StudioActions.DeleteTextBlock({id}));
+    this.textStore.dispatch(TextActions.DeleteTextBlock({id}));
   } 
   public setSelectedTextBlock(id: string){
-    this.studioStore.dispatch(StudioActions.SetSelectedTextBlockId({id}));
+    this.textStore.dispatch(TextActions.SetSelectedTextBlockId({id}));
   } 
 
   public updateTextBlockPosition(id: string){
@@ -147,7 +147,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       y: textBlock.y
     }
     let position = this.toTextBlockRatioPosition(textBlockPixelPosition)
-    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position}))
+    this.textStore.dispatch(TextActions.SetTextBlockPosition({id,position}))
   }
 
   public updateTextBlockDimensions(id: string){
@@ -158,23 +158,23 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
       width: textBlock.width / boundary.width,
       height: textBlock.height / boundary.height,
     }
-    this.studioStore.dispatch(StudioActions.SetTextBlockDimensions({id, dimensions}));
+    this.textStore.dispatch(TextActions.SetTextBlockDimensions({id, dimensions}));
   }
 
   public updateFontSize(id,increase: boolean){
     this.updateTextBlockDimensions(id);
     this.updateTextBlockPosition(id);
-    this.studioStore.dispatch(StudioActions.UpdateTextBlockFontSize({id,increase}));
+    this.textStore.dispatch(TextActions.UpdateTextBlockFontSize({id,increase}));
   }
   public updateLetterSpacing(id: string, increase: boolean){
     this.updateTextBlockDimensions(id);
     this.updateTextBlockPosition(id);
-    this.studioStore.dispatch(StudioActions.UpdateTextBlockLetterSpacing({id, increase}));
+    this.textStore.dispatch(TextActions.UpdateTextBlockLetterSpacing({id, increase}));
   } 
   public updateFontWeight(id: string, increase: boolean){
     this.updateTextBlockDimensions(id);
     this.updateTextBlockPosition(id);
-    this.studioStore.dispatch(StudioActions.UpdateTextBlockFontWeight({id, increase}));
+    this.textStore.dispatch(TextActions.UpdateTextBlockFontWeight({id, increase}));
   } 
   
   public alignText(id: string, alignment: Alignment, ratioPosition: Point){
@@ -202,7 +202,7 @@ export class MapTextComponent implements OnInit,AfterViewInit, OnDestroy {
         newRatioPosition = {...ratioPosition, y: 0.5 - (textBlock.height / boundary.height) / 2 }
       } break;
     }
-    this.studioStore.dispatch(StudioActions.SetTextBlockPosition({id,position: newRatioPosition}))
+    this.textStore.dispatch(TextActions.SetTextBlockPosition({id,position: newRatioPosition}))
   }
   // =====================================================================================
 

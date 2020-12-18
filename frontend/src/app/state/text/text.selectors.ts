@@ -1,30 +1,17 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
-import { Dims, Orientation } from 'src/app/shared/models';
-import { StudioState} from './studio.reducer';
+import { Orientation, TextBlock, Dims } from '../../shared/models';
+import { TextState } from './text.reducer';
+import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation} from '../map/map.selectors';
+const textFeatureState = createFeatureSelector<TextState>('text');
 
-const studioFeatureState = createFeatureSelector<StudioState>('studio');
 
-export const GetBackgroundSizeRatio = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.backgroundSizeRatio
-)
-
-export const GetAspectRatio = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.aspectRatio
-)
-
-export const GetOrientation = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.orientation
-)
 
 export const GetBackgroundSize = createSelector(
-    studioFeatureState,
+    textFeatureState,
     GetAspectRatio,
     GetBackgroundSizeRatio,
     GetOrientation,
-    (state: StudioState, aspectRatio, backgroundSizeRatio, orientation): any => {
+    (state: TextState, aspectRatio, backgroundSizeRatio, orientation): any => {
         let dims: Dims = {
             width: aspectRatio,
             height: 1 * backgroundSizeRatio,
@@ -40,11 +27,11 @@ export const GetBackgroundSize = createSelector(
 )
 
 export const GetMapDisplaySize = createSelector(
-    studioFeatureState,
+    textFeatureState,
     GetAspectRatio,
     GetBackgroundSizeRatio,
     GetOrientation,
-    (state: StudioState, aspectRatio, backgroundSizeRatio, orientation): any => {
+    (state: TextState, aspectRatio, backgroundSizeRatio, orientation): any => {
         let dims: Dims = {
             width: aspectRatio,
             height: 1 * (1 - backgroundSizeRatio),
@@ -60,28 +47,28 @@ export const GetMapDisplaySize = createSelector(
 )
 
 export const GetTextBlocks = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.textBlocks
+    textFeatureState,
+    (state: TextState): any => state.textBlocks
 )
 
 export const GetSelectedTextBlockId = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.selectedTextBlockId
+    textFeatureState,
+    (state: TextState): any => state.selectedTextBlockId
 )
 
 export const GetSelectedTextBlock = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))
+    textFeatureState,
+    (state: TextState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))
 )
 
 export const GetSelectedTextBlockValue = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))?.text
+    textFeatureState,
+    (state: TextState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))?.text
 )
 
 export const GetSelectedTextBlockPosition = createSelector(
-    studioFeatureState,
-    (state: StudioState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))?.position
+    textFeatureState,
+    (state: TextState): any => state.textBlocks.find((tb=>tb.id ===state.selectedTextBlockId))?.position
 )
 
 

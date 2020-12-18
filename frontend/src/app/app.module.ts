@@ -22,8 +22,20 @@ import { DialogComponent } from './components/dialog/dialog.component';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
-import { StudioEffects } from './state/studio/studio.effects';
-import { studioReducer } from './state/studio/studio.reducer';
+
+import { mapReducer } from './state/map/map.reducer';
+import { textReducer } from './state/text/text.reducer';
+import { locationReducer } from './state/location/location.reducer';
+import { colorReducer } from './state/color/color.reducer';
+
+import { MapEffects } from './state/map/map.effects';
+import { TextEffects } from './state/text/text.effects';
+import { LocationEffects } from './state/location/location.effects';
+import { ColorEffects } from './state/color/color.effects';
+
+
+
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgmCoreModule } from '@agm/core';
 import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/google-maps-autocomplete';
@@ -49,11 +61,17 @@ import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/go
     MaterialModule,
     FlexLayoutModule,
     StoreModule.forRoot({
-      studio: studioReducer,
+      map: mapReducer,
+      text: textReducer,
+      location: locationReducer,
+      color: colorReducer,
       router: routerReducer
     }, {}),
     EffectsModule.forRoot([
-      StudioEffects
+      MapEffects,
+      TextEffects,
+      LocationEffects,
+      ColorEffects,
     ]),
     StoreDevtoolsModule.instrument({
       name: 'ATTC',

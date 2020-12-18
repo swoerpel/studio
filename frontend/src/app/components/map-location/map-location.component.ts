@@ -3,8 +3,8 @@ import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { tap, takeUntil, map } from 'rxjs/operators';
 import { MAP_LOCATION_BOUNDARY_SIZE, MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
-import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetBackgroundSize, GetMapDisplaySize } from 'src/app/state/studio/studio.selectors';
+import { LocationState } from 'src/app/state/location/location.reducer';
+import { GetBackgroundSize, GetMapDisplaySize } from 'src/app/state/text/text.selectors';
 
 enum Tab{
   Markers,
@@ -33,7 +33,7 @@ export class MapLocationComponent implements OnInit {
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
-    private studioStore: Store<StudioState>,
+    private locationStore: Store<LocationState>,
     private elementRef: ElementRef,
   ) { }
 
@@ -41,7 +41,7 @@ export class MapLocationComponent implements OnInit {
   }
 
   ngAfterViewInit(){
-    this.studioStore.select(GetMapDisplaySize).pipe(
+    this.locationStore.select(GetMapDisplaySize).pipe(
       tap((ratio)=>{
         if(!document.querySelector('boundary-div')){
           let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.column.column__map.column__map--display');

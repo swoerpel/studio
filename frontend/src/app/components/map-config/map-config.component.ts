@@ -5,11 +5,23 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
-import { StudioActions } from 'src/app/state/studio/actions';
-import { StudioState } from 'src/app/state/studio/studio.reducer';
-import { GetAspectRatio, GetBackgroundSizeRatio, GetOrientation, GetSelectedTextBlock, GetSelectedTextBlockId, GetSelectedTextBlockValue, GetTextBlocks } from 'src/app/state/studio/studio.selectors';
+import { TextActions } from 'src/app/state/text/actions';
+import { TextState } from 'src/app/state/text/text.reducer';
+import { 
+  GetAspectRatio, 
+  GetBackgroundSizeRatio, 
+  GetOrientation, 
+} from 'src/app/state/map/map.selectors';
+import { 
+  GetSelectedTextBlock, 
+  GetSelectedTextBlockId, 
+  GetSelectedTextBlockValue, 
+  GetTextBlocks 
+} from 'src/app/state/text/text.selectors';
 import { DialogComponent } from '../dialog/dialog.component';
 import { last } from 'lodash';
+import { MapState } from 'src/app/state/map/Map.reducer';
+import { MapActions } from 'src/app/state/map/actions';
 @Component({
   selector: 'app-map-config',
   templateUrl: './map-config.component.html',
@@ -41,43 +53,43 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   constructor(
     private dialog: MatDialog,
     private elementRef: ElementRef,
-    private studioStore: Store<StudioState>,
+    private mapStore: Store<MapState>,
+    private textStore: Store<TextState>,
   ) { }
 
   ngOnInit(): void {
-    this.textBlocks$ = this.studioStore.select(GetTextBlocks);//combineLatest([
+    this.textBlocks$ = this.textStore.select(GetTextBlocks);
+    this.textStore.select(GetSelectedTextBlockValue).pipe(
+      switchMap(() => this.textStore.select(GetSelectedTextBlock)),
+      tap((tb: TextBlock)=>this.calculateTextBlockStyle(tb)),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
 
     this.textBlockStyles$ = combineLatest([
-      this.studioStore.select(GetOrientation),
-      this.studioStore.select(GetBackgroundSizeRatio),
-      this.studioStore.select(GetAspectRatio),
-      this.studioStore.select(GetTextBlocks),
+      this.mapStore.select(GetOrientation),
+      this.mapStore.select(GetBackgroundSizeRatio),
+      this.mapStore.select(GetAspectRatio),
+      this.textStore.select(GetTextBlocks),
     ]).pipe(
       map(last),
-      tap(() =>console.log('update')),
       map((tbs: TextBlock[]) =>
         tbs.reduce((obj,tb: TextBlock)=>({...obj,[tb.id]:this.calculateTextBlockStyle(tb)}),{})
       ),
     )
 
-    this.studioStore.select(GetSelectedTextBlockValue).pipe(
-      switchMap(() => this.studioStore.select(GetSelectedTextBlock)),
-      tap((tb: TextBlock)=>this.calculateTextBlockStyle(tb)),
-      takeUntil(this.unsubscribe)
-    ).subscribe();
-    this.studioStore.select(GetBackgroundSizeRatio).pipe(
+    this.mapStore.select(GetBackgroundSizeRatio).pipe(
       tap((backgroundSizeRatio) => {
         this.backgroundSizeRatio = backgroundSizeRatio
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
-    this.studioStore.select(GetAspectRatio).pipe(
+    this.mapStore.select(GetAspectRatio).pipe(
       tap((aspectRatio) => {
         this.aspectRatio = aspectRatio;
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
-    this.studioStore.select(GetOrientation).pipe(
+    this.mapStore.select(GetOrientation).pipe(
       tap((orientation) => {
         this.orientation = orientation;
       }),
@@ -127,7 +139,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   public setOrientation(orientation: Orientation, dispatchAction: boolean = true){
     if(dispatchAction){
-      this.studioStore.dispatch(StudioActions.SetOrientation({orientation}))
+      this.textStore.dispatch(MapActions.SetOrientation({orientation}))
     }
     this.orientation = orientation;
     this.setAspectRatio(this.aspectRatio);
@@ -145,7 +157,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       this.mapContainerRef.style.height = `${newWidth}px`
     }
     if(dispatchAction){
-      this.studioStore.dispatch(StudioActions.SetAspectRatio({aspectRatio}))
+      this.textStore.dispatch(MapActions.SetAspectRatio({aspectRatio}))
     }
   }
 
@@ -159,7 +171,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     this.mapBackgroundRef.style.flex = this.backgroundSizeRatio
     this.mapDisplayRef.style.flex = (1 - this.backgroundSizeRatio);
     if(dispatchAction){
-      this.studioStore.dispatch(StudioActions.SetBackgroundSizeRatio({backgroundSizeRatio: this.backgroundSizeRatio}))
+      this.textStore.dispatch(MapActions.SetBackgroundSizeRatio({backgroundSizeRatio: this.backgroundSizeRatio}))
     }
   }
 

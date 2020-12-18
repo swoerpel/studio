@@ -5,8 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({
     providedIn: 'root'
 })
-export class StudioEffects {
-    public user$: Observable<any>;
+export class LocationEffects {
     constructor( 
         private actions$: Actions,
     ){ 
