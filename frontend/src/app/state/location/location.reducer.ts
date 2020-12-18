@@ -4,18 +4,23 @@ import { makeid } from 'src/app/shared/helpers';
 import { LatLng, Orientation, TextBlock } from 'src/app/shared/models';
 import { LocationActions} from './actions';
 
-
-export interface LocationState {
-    center: LatLng
-    zoom: number;
-}
-
-const initialState: LocationState = {
+const getDefaultLocation = () => ({
     center: {
         lat: 43.0731,
         lng:-89.4012
     },
     zoom: 14,
+    address: 'Madison, WI, USA',
+});
+
+export interface LocationState {
+    center: LatLng
+    zoom: number;
+    address: string;
+}
+
+const initialState: LocationState = {
+  ...getDefaultLocation()
 }
 
 export const locationReducer = createReducer<LocationState>(
@@ -30,6 +35,12 @@ export const locationReducer = createReducer<LocationState>(
         return {
             ...state,
             zoom: action.zoom,
+        }
+    }),
+    on(LocationActions.SetAddress, (state, action): LocationState => {
+        return {
+            ...state,
+            address: action.address,
         }
     }),
 );

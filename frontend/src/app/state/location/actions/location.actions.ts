@@ -10,3 +10,8 @@ export const SetZoom = createAction(
     '[Location] Set Zoom',
     props<{zoom: number}>()
 )
+
+export const SetAddress = createAction(
+    '[Location] Set Address',
+    props<{address: string}>()
+)

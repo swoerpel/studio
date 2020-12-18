@@ -13,3 +13,8 @@ export const GetZoom = createSelector(
     locationFeatureState,
     (state: LocationState): any => state.zoom
 )
+
+export const AddressUpdated = createSelector(
+    locationFeatureState,
+    (state: LocationState): any => state.address
+)
