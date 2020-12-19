@@ -148,8 +148,7 @@ export class MapLocationComponent implements OnInit {
     // the home screen
     this.cropMapBounds(bounds.toJSON()).pipe(
       first(),
-      map((bounds)=>LocationActions.SetBounds({bounds})),
-      map(this.locationStore.dispatch)
+      map((bounds:Bounds)=>this.locationStore.dispatch(LocationActions.SetBounds({bounds})))
     ).subscribe();
   }
 

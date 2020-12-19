@@ -40,6 +40,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   public textBlocks$: Observable<TextBlock[]>;
 
   public textBlockStyles$: Observable<any>;
+  public bounds$: Observable<any>;
 
   private unsubscribe: Subject<void> = new Subject();
 
@@ -52,6 +53,14 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+
+    this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds).pipe(
+      tap((bounds: Bounds)=>{
+        console.log('bounds',bounds)
+      })
+    )
+    // this.bounds$.subscribe();
+
     this.textBlocks$ = this.textStore.select(TextSelectors.GetTextBlocks);
     this.textStore.select(TextSelectors.GetSelectedTextBlockValue).pipe(
       switchMap(() => this.textStore.select(TextSelectors.GetSelectedTextBlock)),
@@ -89,14 +98,14 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
-    
 
-    this.locationStore.select(LocationSelectors.GetBounds).pipe(
-      tap((bounds: Bounds) => {
-        console.log('bounds',bounds)
-      }),
-      takeUntil(this.unsubscribe)
-    ).subscribe();
+
+    // this.locationStore.select(LocationSelectors.GetBounds).pipe(
+    //   tap((bounds: Bounds) => {
+    //     console.log('bounds',bounds)
+    //   }),
+    //   takeUntil(this.unsubscribe)
+    // ).subscribe();
 
   }
 
