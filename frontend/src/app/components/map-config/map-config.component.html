@@ -1,7 +1,24 @@
 <div class="container">
     <div class="container container__map-zone">
         <div class="map">
-            <div (click)="configureMapLocation()" class="map map__display">DISPLAY</div>
+            <div (click)="configureMapLocation()" class="map map__display"> 
+                    <!-- <agm-map 
+                        [latitude]="lat" 
+                        [longitude]="lng" 
+                        [zoom]="zoom"
+                        [styles]="{}"
+                        [mapDraggable]="false"
+                        [disableDefaultUI]="true" 
+                        [mapTypeId]="'terrain'"
+                        #map> -->
+                    <!-- <agm-marker *ngFor="let m of markers;"
+                        [latitude]="m.lat"
+                        [longitude]="m.lng"
+                        [markerDraggable]="true"
+                        (dragEnd)="markerDragEnd(m, $event)">
+                    </agm-marker> -->
+            <!-- </agm-map> -->
+    </div>
             <div (click)="configureMapText()" class="map map__background" #textBoundary>
                 <ng-container *ngIf="(textBlockStyles$ | async) as tbStyles">
                     <div *ngFor="let tb of (textBlocks$ | async)"

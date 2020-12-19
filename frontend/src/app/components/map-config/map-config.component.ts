@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
+import { Bounds, Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { TextActions } from 'src/app/state/text/actions';
 import { TextSelectors } from 'src/app/state/text/selectors';
 import { TextState } from 'src/app/state/text/text.reducer';
@@ -13,6 +13,8 @@ import { DialogComponent } from '../dialog/dialog.component';
 import { last } from 'lodash';
 import { MapState } from 'src/app/state/map/map.reducer';
 import { MapActions } from 'src/app/state/map/actions';
+import { LocationState } from 'src/app/state/location/location.reducer';
+import { LocationSelectors } from 'src/app/state/location/selectors';
 @Component({
   selector: 'app-map-config',
   templateUrl: './map-config.component.html',
@@ -46,6 +48,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     private elementRef: ElementRef,
     private mapStore: Store<MapState>,
     private textStore: Store<TextState>,
+    private locationStore: Store<LocationState>,
   ) { }
 
   ngOnInit(): void {
@@ -69,23 +72,32 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     )
 
     this.mapStore.select(MapSelectors.GetBackgroundSizeRatio).pipe(
-      tap((backgroundSizeRatio) => {
+      tap((backgroundSizeRatio: number) => {
         this.backgroundSizeRatio = backgroundSizeRatio
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
     this.mapStore.select(MapSelectors.GetAspectRatio).pipe(
-      tap((aspectRatio) => {
+      tap((aspectRatio: number) => {
         this.aspectRatio = aspectRatio;
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
     this.mapStore.select(MapSelectors.GetOrientation).pipe(
-      tap((orientation) => {
+      tap((orientation: Orientation) => {
         this.orientation = orientation;
       }),
       takeUntil(this.unsubscribe)
     ).subscribe();
+    
+
+    this.locationStore.select(LocationSelectors.GetBounds).pipe(
+      tap((bounds: Bounds) => {
+        console.log('bounds',bounds)
+      }),
+      takeUntil(this.unsubscribe)
+    ).subscribe();
+
   }
 
   ngAfterContentInit() {

@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { Orientation } from "src/app/shared/models";
+import { Bounds, Orientation } from "src/app/shared/models";
 import { MapActions } from "./actions";
 
 export interface MapState {
@@ -34,4 +34,5 @@ export const mapReducer = createReducer<MapState>(
             orientation: action.orientation,
         }
     }),
+ 
 );

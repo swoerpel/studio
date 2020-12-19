@@ -1,5 +1,5 @@
 import {createAction, props} from '@ngrx/store';
-import { Alignment, Dims, LatLng, Orientation, Point } from 'src/app/shared/models';
+import { Alignment, Bounds, Dims, LatLng, Orientation, Point } from 'src/app/shared/models';
 
 export const SetCenter = createAction(
     '[Location] Set Center',
@@ -14,4 +14,8 @@ export const SetZoom = createAction(
 export const SetAddress = createAction(
     '[Location] Set Address',
     props<{address: string}>()
+)
+export const SetBounds = createAction(
+    '[Location] Set Bounds',
+    props<{bounds: Bounds}>()
 )

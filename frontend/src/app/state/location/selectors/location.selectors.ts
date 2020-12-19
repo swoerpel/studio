@@ -14,7 +14,14 @@ export const GetZoom = createSelector(
     (state: LocationState): any => state.zoom
 )
 
+export const GetBounds = createSelector(
+    locationFeatureState,
+    (state: LocationState): any => state.bounds
+)
+
 export const AddressUpdated = createSelector(
     locationFeatureState,
     (state: LocationState): any => state.address
 )
+
+

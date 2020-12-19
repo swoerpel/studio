@@ -1,7 +1,7 @@
 import { createReducer, on } from "@ngrx/store";
 import { DEFAULT_FONT_SIZE, DEFAULT_FONT_WEIGHT, DEFAULT_LETTER_SPACING, FONT_SIZE_INCREMENT, FONT_WEIGHT_INCREMENT, LETTER_SPACING_SIZE_INCREMENT, MAX_FONT_WEIGHT, MIN_FONT_WEIGHT } from 'src/app/shared/constants';
 import { makeid } from 'src/app/shared/helpers';
-import { LatLng, Orientation, TextBlock } from 'src/app/shared/models';
+import { Bounds, LatLng, Orientation, TextBlock } from 'src/app/shared/models';
 import { LocationActions} from './actions';
 
 const getDefaultLocation = () => ({
@@ -11,12 +11,14 @@ const getDefaultLocation = () => ({
     },
     zoom: 14,
     address: 'Madison, WI, USA',
+    bounds: null,
 });
 
 export interface LocationState {
     center: LatLng
     zoom: number;
     address: string;
+    bounds: Bounds;
 }
 
 const initialState: LocationState = {
@@ -41,6 +43,12 @@ export const locationReducer = createReducer<LocationState>(
         return {
             ...state,
             address: action.address,
+        }
+    }),
+    on(LocationActions.SetBounds, (state, action): LocationState => {
+        return {
+            ...state,
+            bounds: {...action.bounds},
         }
     }),
 );

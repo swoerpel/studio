@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Subject } from 'rxjs';
-import { tap, takeUntil, map, withLatestFrom } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { tap, takeUntil, map, withLatestFrom, first } from 'rxjs/operators';
 import { MAP_LOCATION_BOUNDARY_SIZE, MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { LocationState } from 'src/app/state/location/location.reducer';
 import { LocationActions } from 'src/app/state/location/actions';
@@ -9,9 +9,11 @@ import { LocationSelectors } from 'src/app/state/location/selectors';
 import { MapSelectors } from 'src/app/state/map/selectors';
 import { MapState } from 'src/app/state/map/map.reducer';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Bounds, Dims, LatLng, Point } from 'src/app/shared/models';
+import { Bounds, Dims, LatLng, Marker, Point } from 'src/app/shared/models';
 import { formatLatLngText } from 'src/app/shared/helpers';
 import { head, last } from 'lodash';
+import { GoogleMapsAPIWrapper, MarkerManager } from '@agm/core';
+import { MapActions } from 'src/app/state/map/actions';
 enum Tab{
   Markers,
   Routes
@@ -20,11 +22,13 @@ enum Tab{
 @Component({
   selector: 'app-map-location',
   templateUrl: './map-location.component.html',
-  styleUrls: ['./map-location.component.scss']
+  styleUrls: ['./map-location.component.scss'],
 })
 export class MapLocationComponent implements OnInit {
 
-  @ViewChild('mapBoundary') mapBoundaryRef: ElementRef;
+  @ViewChild('mapContainer') mapContainer: ElementRef;
+
+  public boundaryOutlineClassName: string = 'boundary-outline';
 
   public Tab = Tab;
 
@@ -36,6 +40,7 @@ export class MapLocationComponent implements OnInit {
   public lng = -89.4012;
   public zoom = 14;
 
+  
   public centerFormGroup = new FormGroup({
     lat: new FormControl(),
     lng: new FormControl(),
@@ -43,6 +48,14 @@ export class MapLocationComponent implements OnInit {
 
   public zoomFormControl = new FormControl();
 
+  public markers: Marker[] = [
+    {
+        lat: this.lat,
+        lng: this.lng,
+        label: 'A',
+        draggable: true
+    },
+  ]
 
   private unsubscribe: Subject<void> = new Subject();
 
@@ -53,6 +66,7 @@ export class MapLocationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+ 
     this.locationStore.select(LocationSelectors.GetCenter).pipe(
       map((latLng: LatLng) => formatLatLngText(latLng.lat,latLng.lng)),
       map((t) => ({lat:head(t),lng:last(t)})),
@@ -106,7 +120,11 @@ export class MapLocationComponent implements OnInit {
     this.unsubscribe.complete()
   }
 
-  public searchPlace(place){
+  public markerDragEnd(m: Marker, $event: MouseEvent): void {
+    console.log('dragEnd', m, $event);
+  }
+
+  public searchPlace(place): void{
     let center: LatLng = {
       lat: place.geometry.location.lat(),
       lng: place.geometry.location.lng(),
@@ -116,34 +134,61 @@ export class MapLocationComponent implements OnInit {
     this.locationStore.dispatch(LocationActions.SetAddress({address}));
   }
 
-  centerChange(center: LatLng){
+  public centerChange(center: LatLng): void{
     this.locationStore.dispatch(LocationActions.SetCenter({center}))
   }
 
-  zoomChange(zoom: number){
+  public zoomChange(zoom: number): void{
     this.locationStore.dispatch(LocationActions.SetZoom({zoom}))
   }
 
-  boundsChange(bounds: google.maps.LatLngBounds){
+  public boundsChange(bounds: google.maps.LatLngBounds): void{
     // This is where I will need to format the bounds so they
     // fit the aspect ratio in the map location component and
     // the home screen
-    let croppedBounds: Bounds = this.cropMapBounds(bounds.toJSON())
+    this.cropMapBounds(bounds.toJSON()).pipe(
+      first(),
+      map((bounds)=>LocationActions.SetBounds({bounds})),
+      map(this.locationStore.dispatch)
+    ).subscribe();
   }
 
-  private cropMapBounds(bounds: Bounds){
-    console.log("bounds.north",bounds.north)
-    console.log("bounds.south",bounds.south)
-    console.log("bounds.east",bounds.east)
-    console.log("bounds.west",bounds.west)
-    return {
-      ...bounds
-    }
+  private cropMapBounds(bounds: Bounds): Observable<Bounds>{
+    return this.locationStore.select(LocationSelectors.GetCenter).pipe(
+      map((center:LatLng)=>{
+        let boundaryContainerRef = this.elementRef.nativeElement.querySelector(`div.${this.boundaryOutlineClassName}`);
+
+        let boundaryContainer = boundaryContainerRef?.getBoundingClientRect();
+        let mapContainer = this.mapContainer.nativeElement?.getBoundingClientRect();
+
+        let boundaryRadii: Point = {
+          x: (1 - boundaryContainer.width / mapContainer.width),
+          y: (1 - boundaryContainer.height / mapContainer.height) / 2,
+        }
+        let mapRadii: Point = {
+          x: (bounds.east - bounds.west) / 2,
+          y: (bounds.north - bounds.south) / 2
+        }
+        let boundOffsets: Bounds = {
+          north: -mapRadii.y * (boundaryRadii.y - 1),
+          south: mapRadii.y * (boundaryRadii.y - 1),
+          east: -mapRadii.x * (boundaryRadii.x - 1),
+          west: mapRadii.x * (boundaryRadii.x - 1)
+        }
+        let croppedBounds: Bounds = {
+          north: center.lat + boundOffsets.north,
+          east: center.lng + boundOffsets.east,
+          south: center.lat + boundOffsets.south,
+          west: center.lng + boundOffsets.west
+        }
+        return croppedBounds;
+      }),
+    )
   }
 
   private createBoundaryDiv(corner: Point, dims: Dims): HTMLElement{
     let newDiv = document.createElement('div');
-    newDiv.className = 'chet';
+    newDiv.className = this.boundaryOutlineClassName;
     newDiv.style.position = 'absolute';
     newDiv.style.top = `${corner.x}`;
     newDiv.style.left = `${corner.y}px`;
