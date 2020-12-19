@@ -11,7 +11,12 @@ const getDefaultLocation = () => ({
     },
     zoom: 14,
     address: 'Madison, WI, USA',
-    bounds: null,
+    bounds: {
+        east: -89.38284285410894,
+        north: 43.085799686631525,
+        south: 43.06040031336847,
+        west: -89.41955714589106,
+    },
 });
 
 export interface LocationState {
