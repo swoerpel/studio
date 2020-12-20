@@ -15,30 +15,27 @@
         <input [formControl]="zoomFormControl" class="text-input text-input__readonly" type="text" placeholder="zoom" readonly>
     </div>
     <div class="column column__map column__map--display"  #mapContainer>
-        <!-- <div class="map-boundary" #mapBoundary> -->
-            <agm-map 
+        <ng-container *ngIf="(location$ | async) as l">
+            <agm-map class="agm-map"
                     (zoomChange)="zoomChange($event)"
                     (centerChange)="centerChange($event)"
                     (boundsChange)="boundsChange($event)"
-                    [latitude]="lat" 
-                    [longitude]="lng" 
-                    [zoom]="zoom"
+                    [latitude]="l.center.lat"
+                    [longitude]="l.center.lng"
+                    [zoom]="l.zoom"
                     [styles]="styles"
                     [mapDraggable]="true"
                     [disableDefaultUI]="true" 
                     [mapTypeId]="'terrain'"
                     #map>
-                    <agm-marker *ngFor="let m of markers;"
+                    <!-- <agm-marker *ngFor="let m of markers;"
                         [latitude]="m.lat"
                         [longitude]="m.lng"
                         [markerDraggable]="true"
                         (dragEnd)="markerDragEnd(m, $event)">
-                    </agm-marker>
+                    </agm-marker> -->
             </agm-map>
-            <!-- (markerClick)="clickedMarker(m.label, i)" -->
-          
-            <!-- <agm-marker [latitude]="lat" [longitude]="lng" [label]="'M'"> asdfasdfasdf</agm-marker> -->
-        <!-- </div> -->
+        </ng-container>
     </div>
     
 </div>

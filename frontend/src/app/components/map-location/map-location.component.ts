@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { tap, takeUntil, map, withLatestFrom, first } from 'rxjs/operators';
+import { tap, takeUntil, map, withLatestFrom, first, skip, debounceTime } from 'rxjs/operators';
 import { MAP_LOCATION_BOUNDARY_SIZE, MAP_TEXT_BOUNDARY_SIZE } from 'src/app/shared/constants';
 import { LocationState } from 'src/app/state/location/location.reducer';
 import { LocationActions } from 'src/app/state/location/actions';
@@ -12,8 +12,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Bounds, Dims, LatLng, Marker, Point } from 'src/app/shared/models';
 import { formatLatLngText } from 'src/app/shared/helpers';
 import { head, last } from 'lodash';
-import { GoogleMapsAPIWrapper, MarkerManager } from '@agm/core';
+import { AgmMap, GoogleMapsAPIWrapper, MarkerManager } from '@agm/core';
 import { MapActions } from 'src/app/state/map/actions';
+import { MapStylingService } from 'src/app/services/map-styling.service';
 enum Tab{
   Markers,
   Routes
@@ -26,7 +27,8 @@ enum Tab{
 })
 export class MapLocationComponent implements OnInit {
 
-  @ViewChild('mapContainer') mapContainer: ElementRef;
+  @ViewChild('mapContainer') mapContainer: ElementRef<any>;
+  @ViewChild('map') map: AgmMap;
 
   public boundaryOutlineClassName: string = 'boundary-outline';
 
@@ -36,9 +38,10 @@ export class MapLocationComponent implements OnInit {
 
   public styles = {};
 
-  public lat = 43.0731;
-  public lng = -89.4012;
-  public zoom = 14;
+  // public lat;// = 43.0731;
+  // public lng;// = -89.4012;
+  // public zoom;// = 14;
+  public location$: Observable<{center: LatLng, zoom: number}>;
 
   
   public centerFormGroup = new FormGroup({
@@ -47,15 +50,17 @@ export class MapLocationComponent implements OnInit {
   })
 
   public zoomFormControl = new FormControl();
+  public bounds$: Observable<Bounds>;
 
   public markers: Marker[] = [
-    {
-        lat: this.lat,
-        lng: this.lng,
-        label: 'A',
-        draggable: true
-    },
+    // {
+    //     lat: this.lat,
+    //     lng: this.lng,
+    //     label: 'A',
+    //     draggable: true
+    // },
   ]
+
 
   private unsubscribe: Subject<void> = new Subject();
 
@@ -63,10 +68,13 @@ export class MapLocationComponent implements OnInit {
     private mapStore: Store<MapState>,
     private locationStore: Store<LocationState>,
     private elementRef: ElementRef,
+    private mapStylingService: MapStylingService
   ) { }
 
   ngOnInit(): void {
- 
+    this.styles = this.mapStylingService.generateStyles();
+    this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds).pipe()
+    this.location$ = this.locationStore.select(LocationSelectors.GetLocation).pipe(debounceTime(200));
     this.locationStore.select(LocationSelectors.GetCenter).pipe(
       map((latLng: LatLng) => formatLatLngText(latLng.lat,latLng.lng)),
       map((t) => ({lat:head(t),lng:last(t)})),
@@ -78,20 +86,18 @@ export class MapLocationComponent implements OnInit {
       takeUntil(this.unsubscribe)
     ).subscribe();
 
+    
     this.locationStore.select(LocationSelectors.AddressUpdated).pipe(
       withLatestFrom(this.locationStore.select(LocationSelectors.GetCenter)),
       map(last),
-      tap((center: LatLng)=> {
-        this.lat = center.lat;
-        this.lng = center.lng;
-      }),
+      tap((center: LatLng)=> this.centerChange(center)),
       takeUntil(this.unsubscribe)
     ).subscribe();
   }
 
   ngAfterViewInit(){
     this.mapStore.select(MapSelectors.GetMapDisplaySize).pipe(
-      tap((ratio)=>{
+      tap((ratio: number)=>{
         if(!document.querySelector('boundary-div')){
           let boundaryContainerRef = this.elementRef.nativeElement.querySelector('div.column.column__map.column__map--display');
           let boundaryContainer = boundaryContainerRef?.getBoundingClientRect();
@@ -120,8 +126,10 @@ export class MapLocationComponent implements OnInit {
     this.unsubscribe.complete()
   }
 
+
+
   public markerDragEnd(m: Marker, $event: MouseEvent): void {
-    console.log('dragEnd', m, $event);
+    // console.log('dragEnd', m, $event);
   }
 
   public searchPlace(place): void{
@@ -143,9 +151,6 @@ export class MapLocationComponent implements OnInit {
   }
 
   public boundsChange(bounds: google.maps.LatLngBounds): void{
-    // This is where I will need to format the bounds so they
-    // fit the aspect ratio in the map location component and
-    // the home screen
     this.cropMapBounds(bounds.toJSON()).pipe(
       first(),
       map((bounds:Bounds)=>this.locationStore.dispatch(LocationActions.SetBounds({bounds})))
@@ -156,13 +161,23 @@ export class MapLocationComponent implements OnInit {
     return this.locationStore.select(LocationSelectors.GetCenter).pipe(
       map((center:LatLng)=>{
         let boundaryContainerRef = this.elementRef.nativeElement.querySelector(`div.${this.boundaryOutlineClassName}`);
-
         let boundaryContainer = boundaryContainerRef?.getBoundingClientRect();
         let mapContainer = this.mapContainer.nativeElement?.getBoundingClientRect();
-
+        // let width = boundaryContainerRef?.style.width
+        // let height = boundaryContainerRef?.style.height
+        // let boundaryContainer: Dims = {
+        //   width: parseFloat(width?.substring(0,width.length - 2)), //cut off 'px'
+        //   height: parseFloat(height?.substring(0,height.length - 2)),
+        // }
+        // width = this.mapContainer.nativeElement?.style.width
+        // height = this.mapContainer.nativeElement?.style.height
+        // let mapContainer: Dims = {
+        //   width: parseFloat(width?.substring(0,width.length - 2)), //cut off 'px'
+        //   height: parseFloat(height?.substring(0,height.length - 2)),
+        // }
         let boundaryRadii: Point = {
           x: (1 - boundaryContainer.width / mapContainer.width),
-          y: (1 - boundaryContainer.height / mapContainer.height) / 2,
+          y: (1 - boundaryContainer.height / mapContainer.height),
         }
         let mapRadii: Point = {
           x: (bounds.east - bounds.west) / 2,

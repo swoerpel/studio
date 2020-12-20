@@ -1,10 +1,10 @@
-import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { debounceTime, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { debounceTime, delay, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { Bounds, Dims, Orientation, Point, TextBlock } from 'src/app/shared/models';
+import { Bounds, Dims, LatLng, Marker, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { TextActions } from 'src/app/state/text/actions';
 import { TextSelectors } from 'src/app/state/text/selectors';
 import { TextState } from 'src/app/state/text/text.reducer';
@@ -15,6 +15,11 @@ import { MapState } from 'src/app/state/map/map.reducer';
 import { MapActions } from 'src/app/state/map/actions';
 import { LocationState } from 'src/app/state/location/location.reducer';
 import { LocationSelectors } from 'src/app/state/location/selectors';
+import { MapStylingService } from 'src/app/services/map-styling.service';
+import { GoogleMapsAPIWrapper, AgmMap} from '@agm/core';
+
+
+
 @Component({
   selector: 'app-map-config',
   templateUrl: './map-config.component.html',
@@ -22,6 +27,7 @@ import { LocationSelectors } from 'src/app/state/location/selectors';
 })
 export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
+  @ViewChild('map') agmMap: AgmMap;
   @ViewChild('textBoundary') textBoundaryRef: ElementRef;
   @ViewChildren('textBlock') textBlocksRef: QueryList<ElementRef>;
 
@@ -40,7 +46,14 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   public textBlocks$: Observable<TextBlock[]>;
 
   public textBlockStyles$: Observable<any>;
-  public bounds$: Observable<any>;
+  public bounds$: Observable<Bounds>;
+  public location$: Observable<{center: LatLng, zoom: number}>;
+
+  public styles: any = {};
+  // public styles$: Obserable<any>; // future
+
+  public boundsPadding = {top:0,bottom:0,right:0,left:0};
+  public zoom$: Observable<number>;// = new Subject();
 
   private unsubscribe: Subject<void> = new Subject();
 
@@ -50,17 +63,23 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     private mapStore: Store<MapState>,
     private textStore: Store<TextState>,
     private locationStore: Store<LocationState>,
+    private mapStylingService: MapStylingService
   ) { }
 
   ngOnInit(): void {
-
+    this.styles = this.mapStylingService.generateStyles()
     this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds).pipe(
-      tap((bounds: Bounds)=>{
-        console.log('bounds',bounds)
-      })
+     
     )
-    // this.bounds$.subscribe();
 
+    // this.zoom$ = this.bounds$.pipe(
+    //   debounceTime(400),
+    //   withLatestFrom(this.locationStore.select(LocationSelectors.GetZoom)),
+    //   map(last),
+    //   tap(console.log),
+    // )
+
+    this.location$ = this.locationStore.select(LocationSelectors.GetLocation);
     this.textBlocks$ = this.textStore.select(TextSelectors.GetTextBlocks);
     this.textStore.select(TextSelectors.GetSelectedTextBlockValue).pipe(
       switchMap(() => this.textStore.select(TextSelectors.GetSelectedTextBlock)),
@@ -99,14 +118,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
       takeUntil(this.unsubscribe)
     ).subscribe();
 
-
-    // this.locationStore.select(LocationSelectors.GetBounds).pipe(
-    //   tap((bounds: Bounds) => {
-    //     console.log('bounds',bounds)
-    //   }),
-    //   takeUntil(this.unsubscribe)
-    // ).subscribe();
-
   }
 
   ngAfterContentInit() {
@@ -123,7 +134,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     this.unsubscribe.next()
     this.unsubscribe.complete()
   }
-
   public calculateTextBlockStyle(tb: TextBlock){
     if(!this?.textBoundaryRef){return;}
     let bound = this.textBoundaryRef.nativeElement.getBoundingClientRect();

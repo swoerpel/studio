@@ -23,6 +23,16 @@ export const FONT_WEIGHT_INCREMENT = 100;
 export const MAP_TEXT_BOUNDARY_SIZE = 0.98;
 export const MAP_LOCATION_BOUNDARY_SIZE = 0.98;
 
+export const COLOR_INDEX_MAPPING = {
+    road:0,
+    water:1,
+    natural:2,
+    man_made:3,
+    poi:3,
+    background:0,
+    text:1,
+}
+
 export const PRINT_SIZES: PrintSize[] = [
     {
         name: 'small_poster',

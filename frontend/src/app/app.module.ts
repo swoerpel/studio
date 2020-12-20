@@ -18,6 +18,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { DrawerComponent } from './components/drawer/drawer.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 
+import { MapStylingService } from './services/map-styling.service';
 
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -34,7 +35,7 @@ import { LocationEffects } from './state/location/location.effects';
 import { ColorEffects } from './state/color/color.effects';
 
 import { ReactiveFormsModule } from '@angular/forms';
-import { AgmCoreModule, GoogleMapsAPIWrapper, MarkerManager } from '@agm/core';
+import { AgmCoreModule, GoogleMapsAPIWrapper, MarkerManager, RectangleManager } from '@agm/core';
 import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/google-maps-autocomplete';
 
 @NgModule({
@@ -49,7 +50,7 @@ import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/go
     MapColorAssignmentComponent,
     HeaderComponent,
     DrawerComponent,
-    DialogComponent
+    DialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -82,7 +83,12 @@ import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/go
     MatGoogleMapsAutocompleteModule,
     ReactiveFormsModule,
   ],
-  providers: [GoogleMapsAPIWrapper ,MarkerManager],
+  providers: [
+    GoogleMapsAPIWrapper ,
+    MarkerManager,
+    RectangleManager,
+    MapStylingService
+  ],
 
   bootstrap: [AppComponent]
 })
