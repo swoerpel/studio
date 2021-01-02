@@ -38,11 +38,7 @@ export class MapLocationComponent implements OnInit {
 
   public styles = {};
 
-  // public lat;// = 43.0731;
-  // public lng;// = -89.4012;
-  // public zoom;// = 14;
   public location$: Observable<{center: LatLng, zoom: number}>;
-
   
   public centerFormGroup = new FormGroup({
     lat: new FormControl(),
@@ -60,7 +56,6 @@ export class MapLocationComponent implements OnInit {
     //     draggable: true
     // },
   ]
-
 
   private unsubscribe: Subject<void> = new Subject();
 
@@ -126,8 +121,6 @@ export class MapLocationComponent implements OnInit {
     this.unsubscribe.complete()
   }
 
-
-
   public markerDragEnd(m: Marker, $event: MouseEvent): void {
     // console.log('dragEnd', m, $event);
   }
@@ -163,18 +156,6 @@ export class MapLocationComponent implements OnInit {
         let boundaryContainerRef = this.elementRef.nativeElement.querySelector(`div.${this.boundaryOutlineClassName}`);
         let boundaryContainer = boundaryContainerRef?.getBoundingClientRect();
         let mapContainer = this.mapContainer.nativeElement?.getBoundingClientRect();
-        // let width = boundaryContainerRef?.style.width
-        // let height = boundaryContainerRef?.style.height
-        // let boundaryContainer: Dims = {
-        //   width: parseFloat(width?.substring(0,width.length - 2)), //cut off 'px'
-        //   height: parseFloat(height?.substring(0,height.length - 2)),
-        // }
-        // width = this.mapContainer.nativeElement?.style.width
-        // height = this.mapContainer.nativeElement?.style.height
-        // let mapContainer: Dims = {
-        //   width: parseFloat(width?.substring(0,width.length - 2)), //cut off 'px'
-        //   height: parseFloat(height?.substring(0,height.length - 2)),
-        // }
         let boundaryRadii: Point = {
           x: (1 - boundaryContainer.width / mapContainer.width),
           y: (1 - boundaryContainer.height / mapContainer.height),
@@ -216,3 +197,4 @@ export class MapLocationComponent implements OnInit {
   }
 
 }
+

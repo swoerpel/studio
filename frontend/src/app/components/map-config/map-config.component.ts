@@ -1,8 +1,8 @@
 import { AfterContentInit, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, Subject } from 'rxjs';
-import { debounceTime, delay, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { debounceTime, delay, first, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
 import { Bounds, Dims, LatLng, Marker, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { TextActions } from 'src/app/state/text/actions';
@@ -47,14 +47,13 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   public textBlockStyles$: Observable<any>;
   public bounds$: Observable<Bounds>;
-  public location$: Observable<{center: LatLng, zoom: number}>;
 
   public styles: any = {};
   // public styles$: Obserable<any>; // future
 
+  public zoom$: Observable<number>;
+  public center$: Observable<LatLng>;
   public boundsPadding = {top:0,bottom:0,right:0,left:0};
-  public zoom$: Observable<number>;// = new Subject();
-
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
@@ -68,18 +67,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
 
   ngOnInit(): void {
     this.styles = this.mapStylingService.generateStyles()
-    this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds).pipe(
-     
-    )
-
-    // this.zoom$ = this.bounds$.pipe(
-    //   debounceTime(400),
-    //   withLatestFrom(this.locationStore.select(LocationSelectors.GetZoom)),
-    //   map(last),
-    //   tap(console.log),
-    // )
-
-    this.location$ = this.locationStore.select(LocationSelectors.GetLocation);
+    this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds)
     this.textBlocks$ = this.textStore.select(TextSelectors.GetTextBlocks);
     this.textStore.select(TextSelectors.GetSelectedTextBlockValue).pipe(
       switchMap(() => this.textStore.select(TextSelectors.GetSelectedTextBlock)),
@@ -225,3 +213,6 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     }).afterClosed().pipe().subscribe();;
   }
 }
+
+
+

@@ -3,7 +3,6 @@
         <div class="map">
             <div (click)="configureMapLocation()" class="map map__display"> 
                 <ng-container *ngIf="(bounds$ | async) as bounds">
-                    <!-- [zoom]="zoom$ | async" -->
                     <agm-map 
                         [fitBounds]="bounds"
                         [fitBoundsPadding]="boundsPadding"
@@ -13,24 +12,18 @@
                         [draggableCursor]="'pointer'"
                         [mapTypeId]="'terrain'"
                         #map>
-                        <agm-rectangle  
+                        <!-- <agm-rectangle 
                             [north]="bounds.north"
                             [south]="bounds.south"
                             [east]="bounds.east"
                             [west]="bounds.west"
                             [fillColor]="'blue'"
-                            [fillOpacity]="0.15"
+                            [fillOpacity]="0.05"
                             [strokeWeight]="0"
                             [rectangleDraggable]="false">
-                        </agm-rectangle>
+                        </agm-rectangle> -->
                     </agm-map>
                 </ng-container>
-                <!-- <ng-container *ngIf="(location$ | async) as l">
-                    <agm-map 
-                        [latitude]="l.center.lat"
-                        [longitude]="l.center.lng"
-                        [zoom]="l.zoom"
-                </ng-container> -->
         </div>
             <div (click)="configureMapText()" class="map map__background" #textBoundary>
                 <ng-container *ngIf="(textBlockStyles$ | async) as tbStyles">
