@@ -1,22 +1,21 @@
-import { AfterContentInit, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AgmMap } from '@agm/core';
+import { AfterContentInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { debounceTime, delay, first, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { Bounds, Dims, LatLng, Marker, Orientation, Point, TextBlock } from 'src/app/shared/models';
-import { TextActions } from 'src/app/state/text/actions';
-import { TextSelectors } from 'src/app/state/text/selectors';
-import { TextState } from 'src/app/state/text/text.reducer';
-import { MapSelectors } from 'src/app/state/map/selectors';
-import { DialogComponent } from '../dialog/dialog.component';
 import { last } from 'lodash';
-import { MapState } from 'src/app/state/map/map.reducer';
-import { MapActions } from 'src/app/state/map/actions';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { MapStylingService } from 'src/app/services/map-styling.service';
+import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
+import { Bounds, Dims, LatLng, Orientation, Point, TextBlock } from 'src/app/shared/models';
 import { LocationState } from 'src/app/state/location/location.reducer';
 import { LocationSelectors } from 'src/app/state/location/selectors';
-import { MapStylingService } from 'src/app/services/map-styling.service';
-import { GoogleMapsAPIWrapper, AgmMap} from '@agm/core';
+import { MapActions } from 'src/app/state/map/actions';
+import { MapState } from 'src/app/state/map/map.reducer';
+import { MapSelectors } from 'src/app/state/map/selectors';
+import { TextSelectors } from 'src/app/state/text/selectors';
+import { TextState } from 'src/app/state/text/text.reducer';
+import { DialogComponent } from '../dialog/dialog.component';
 
 
 

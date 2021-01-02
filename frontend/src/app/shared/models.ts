@@ -57,3 +57,9 @@ export interface Marker {
 	label?: string;
 	draggable: boolean;
 }
+
+export interface ColorPalette{
+    id: string;
+    name?: string;
+    colors: string[];
+}

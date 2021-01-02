@@ -2,6 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { completeColorPalettes } from '../../shared/colors'; 
 import{ makeid } from '../../shared/helpers';
 import { head, last} from 'lodash';
+import { ColorState } from 'src/app/state/color/color.reducer';
+import { ColorSelectors } from 'src/app/state/color/selectors';
+import { Store } from '@ngrx/store';
+import { ColorPalette } from 'src/app/shared/models';
+import { Observable } from 'rxjs';
+import { ColorActions } from 'src/app/state/color/actions';
 @Component({
   selector: 'app-map-color-palettes',
   templateUrl: './map-color-palettes.component.html',
@@ -9,54 +15,36 @@ import { head, last} from 'lodash';
 })
 export class MapColorPalettesComponent implements OnInit {
 
-  public staticColorPalettes = completeColorPalettes.map((p,i)=>({
-    ...p,
-    selected: i === 0,
-    id: makeid()
-  }));
-  public activeColorPalettes = [];
-  public selectedStaticPaletteId = head(this.staticColorPalettes).id;
-  public selectedActivePaletteId = '';
-  constructor() { }
+  public activeColorPalettes$: Observable<ColorPalette[]>;
+  public staticColorPalettes$: Observable<ColorPalette[]>;
+  public selectedActivePaletteId$: Observable<string>;
+  public selectedStaticPaletteId$: Observable<string>;
+
+  constructor(
+    private colorStore: Store<ColorState>,
+  ) { }
 
   ngOnInit(): void {
+    this.activeColorPalettes$ = this.colorStore.select(ColorSelectors.GetActiveColorPalettes)
+    this.staticColorPalettes$ = this.colorStore.select(ColorSelectors.GetStaticColorPalettes)
+    this.selectedActivePaletteId$ = this.colorStore.select(ColorSelectors.GetSelectedActivePaletteId)
+    this.selectedStaticPaletteId$ = this.colorStore.select(ColorSelectors.GetSelectedStaticPaletteId)
   }
 
   selectStaticPalette(palette){
-    this.selectedStaticPaletteId = palette.id;
-    this.staticColorPalettes.forEach((p)=>{
-      if(p.id !== palette.id)
-        p.selected = false;
-      else
-        p.selected = true;
-    })
+    this.colorStore.dispatch(ColorActions.SetSelectedStaticPalette({colorPaletteId: palette.id}))
   }
 
   selectActivePalette(palette){
-      this.selectedActivePaletteId = palette?.id;
-      this.activeColorPalettes.forEach((p)=>{
-        if(p.id !== palette.id)
-          p.selected = false;
-        else
-          p.selected = true;
-      })
+    this.colorStore.dispatch(ColorActions.SetSelectedActivePalette({colorPaletteId: palette.id}))
   }
 
   applySelectedColor(){
-    let palette = {
-      ...this.staticColorPalettes.find((p)=>p.id ===this.selectedStaticPaletteId),
-      id:makeid(),
-    };
-    this.activeColorPalettes.push(palette);
-    this.selectActivePalette(palette)
+    this.colorStore.dispatch(ColorActions.ApplySelectedStaticPalette())
   }
 
   unapplySelectedColor(){
-    this.activeColorPalettes = this.activeColorPalettes.filter(
-      (p) =>!(this.selectedActivePaletteId === p.id)
-    );
-    this.selectActivePalette(last(this.activeColorPalettes))
-
+    this.colorStore.dispatch(ColorActions.UnapplySelectedActivePalette())
   }
 
 }

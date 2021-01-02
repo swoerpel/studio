@@ -1,5 +1,7 @@
+import { makeid } from "./helpers";
+import { ColorPalette } from "./models";
 
-export var completeColorPalettes: any[] = [
+export const completeColorPalettes: ColorPalette[] = [
     {"name":"empusa",colors:["#c92a28","#e69301","#1f8793","#13652b","#e7d8b0","#48233b","#e3b3ac","#f0f0f2","#1a1a1a"]},
 {colors:["#ff5937","#f6f6f4","#f6f6f4","#f6f6f4","#ff5937"],"name":"spatial02"},
 {colors:["#f3cb4d","#f2f5e3","#20191b","#67875c","#433d5f","#67875c"],"name":"ducci_d"},
@@ -212,4 +214,9 @@ export var completeColorPalettes: any[] = [
 {colors:["#fcfbfd","#efedf5","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#54278f","#3f007d"],"name":"purples"},
 {"name":"greys",colors:["#ffffff","#f0f0f0","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#252525","#000000"]},
 {colors:["#ffffff","#f0f0f0","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#252525","#000000"],"name":"Greys"},
-{colors:["#d24c23","#7ba6bc","#f0c667","#ede2b3","#672b35","#142a36","#108266","#132a37"],"name":"kov_01"}];
+{colors:["#d24c23","#7ba6bc","#f0c667","#ede2b3","#672b35","#142a36","#108266","#132a37"],"name":"kov_01"}]
+.map((cp)=>({
+    id: makeid(),
+    name: cp.name,
+    colors: [...cp.colors],
+}));

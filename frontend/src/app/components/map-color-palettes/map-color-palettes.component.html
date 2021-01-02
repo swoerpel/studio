@@ -1,13 +1,16 @@
 <div class="column column__palettes">
-  <div *ngFor="let palette of staticColorPalettes;"
-        (click)="selectStaticPalette(palette)"
-        [ngClass]="palette.selected? 'selected' : ''"
-        class="color-palette">
-    <div *ngFor="let color of palette.colors; let i = index;"
-          class="color-block"
-          [style.background-color]="color">
+  <ng-container *ngIf="(selectedStaticPaletteId$ | async) as selectedPaletteId">
+    <div *ngFor="let palette of (staticColorPalettes$ | async);"
+         (click)="selectStaticPalette(palette)"
+         [ngClass]="selectedPaletteId === palette.id ? 'selected' : ''"
+         class="color-palette">
+      <div *ngFor="let color of palette.colors; let i = index;"
+           class="color-block"
+           [style.background-color]="color">
+      </div>
     </div>
-  </div>
+  </ng-container>
+ 
 </div>
 <div class="column column__controls">
   <button (click)="applySelectedColor()"
@@ -24,14 +27,16 @@
   </button>
 </div>
 <div class="column column__palettes">
-  <div *ngFor="let palette of activeColorPalettes;"
-        (click)="selectActivePalette(palette)"
-        [ngClass]="palette.selected? 'selected' : ''"
-        class="color-palette">
-    <div *ngFor="let color of palette.colors; let i = index;"
-          class="color-block"
-          [style.background-color]="color">
+  <ng-container *ngIf="(selectedActivePaletteId$ | async) as selectedPaletteId">
+    <div *ngFor="let palette of (activeColorPalettes$ | async);"
+          (click)="selectActivePalette(palette)"
+          [ngClass]="selectedPaletteId === palette.id ? 'selected' : ''"
+          class="color-palette">
+      <div *ngFor="let color of palette.colors; let i = index;"
+            class="color-block"
+            [style.background-color]="color">
+      </div>
     </div>
-  </div>
+  </ng-container>
 </div>
  
