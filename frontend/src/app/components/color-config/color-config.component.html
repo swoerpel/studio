@@ -9,7 +9,17 @@
         </button>
     </div>
     <div class="section section__palettes">
-        
+        <ng-container *ngIf="(selectedActivePaletteId$ | async) as selectedPaletteId">
+            <div *ngFor="let palette of (activeColorPalettes$ | async);"
+                  (click)="selectActivePalette(palette)"
+                  [ngClass]="selectedPaletteId === palette.id ? 'selected' : ''"
+                  class="color-palette">
+              <div *ngFor="let color of palette.colors; let i = index;"
+                    class="color-block"
+                    [style.background-color]="color">
+              </div>
+            </div>
+        </ng-container>
     </div>
     <div class="section section__inputs">
         <button mat-raised-button (click)="viewColorAssignments()">View Color Assignments</button>

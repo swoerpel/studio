@@ -7,7 +7,9 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { MapStylingService } from 'src/app/services/map-styling.service';
 import { ASPECT_RATIOS, BACKGROUND_RATIO_STEP_SIZE, DIALOG_CONTAINER } from 'src/app/shared/constants';
-import { Bounds, Dims, LatLng, Orientation, Point, TextBlock } from 'src/app/shared/models';
+import { Bounds, ColorPalette, Dims, LatLng, Orientation, Point, TextBlock } from 'src/app/shared/models';
+import { ColorState } from 'src/app/state/color/color.reducer';
+import { ColorSelectors } from 'src/app/state/color/selectors';
 import { LocationState } from 'src/app/state/location/location.reducer';
 import { LocationSelectors } from 'src/app/state/location/selectors';
 import { MapActions } from 'src/app/state/map/actions';
@@ -47,8 +49,7 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
   public textBlockStyles$: Observable<any>;
   public bounds$: Observable<Bounds>;
 
-  public styles: any = {};
-  // public styles$: Obserable<any>; // future
+  public styles$: Observable<any>; // future
 
   public zoom$: Observable<number>;
   public center$: Observable<LatLng>;
@@ -60,12 +61,15 @@ export class MapConfigComponent implements OnInit, AfterContentInit, OnDestroy {
     private elementRef: ElementRef,
     private mapStore: Store<MapState>,
     private textStore: Store<TextState>,
+    private colorStore: Store<ColorState>,
     private locationStore: Store<LocationState>,
     private mapStylingService: MapStylingService
   ) { }
 
   ngOnInit(): void {
-    this.styles = this.mapStylingService.generateStyles()
+    this.styles$ = this.colorStore.select(ColorSelectors.GetSelectedPalette).pipe(
+      map((cp: ColorPalette) => this.mapStylingService.generateStyles(cp.colors))
+    )
     this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds)
     this.textBlocks$ = this.textStore.select(TextSelectors.GetTextBlocks);
     this.textStore.select(TextSelectors.GetSelectedTextBlockValue).pipe(

@@ -10,6 +10,10 @@ var concatId = (id: string) => {
     return id + '_' + makeid()
 }
 
+const cpIndex = 26;
+// const cpIndex = Math.floor(Math.random() * completeColorPalettes.length);
+const initialActivePalette: ColorPalette = {...completeColorPalettes[cpIndex], id: concatId(completeColorPalettes[cpIndex].id)};
+
 export interface ColorState {
     staticColorPalettes: ColorPalette[];
     activeColorPalettes: ColorPalette[];
@@ -18,10 +22,10 @@ export interface ColorState {
 }
 
 const initialState: ColorState = {
-    activeColorPalettes: [],
+    activeColorPalettes: [initialActivePalette],
     staticColorPalettes: completeColorPalettes,
     selectedStaticPaletteId: head(completeColorPalettes).id,
-    selectedActivePaletteId: '',
+    selectedActivePaletteId: initialActivePalette.id,
 }
 
 export const colorReducer = createReducer<ColorState>(

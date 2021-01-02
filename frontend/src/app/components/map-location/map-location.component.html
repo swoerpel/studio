@@ -23,8 +23,8 @@
                     [latitude]="l.center.lat"
                     [longitude]="l.center.lng"
                     [zoom]="l.zoom"
-                    [styles]="styles"
-                    [mapDraggable]="false"
+                    [styles]="styles$ | async"
+                    [mapDraggable]="true"
                     [disableDefaultUI]="true" 
                     [mapTypeId]="'terrain'"
                     #map>

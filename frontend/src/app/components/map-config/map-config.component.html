@@ -6,8 +6,8 @@
                     <agm-map 
                         [fitBounds]="bounds"
                         [fitBoundsPadding]="boundsPadding"
-                        [styles]="styles"
-                        [mapDraggable]="true"
+                        [styles]="styles$ | async"
+                        [mapDraggable]="false"
                         [disableDefaultUI]="true" 
                         [draggableCursor]="'pointer'"
                         [mapTypeId]="'terrain'"

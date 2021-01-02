@@ -9,12 +9,14 @@ import { LocationSelectors } from 'src/app/state/location/selectors';
 import { MapSelectors } from 'src/app/state/map/selectors';
 import { MapState } from 'src/app/state/map/map.reducer';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Bounds, Dims, LatLng, Marker, Point } from 'src/app/shared/models';
+import { Bounds, ColorPalette, Dims, LatLng, Marker, Point } from 'src/app/shared/models';
 import { formatLatLngText } from 'src/app/shared/helpers';
 import { head, last } from 'lodash';
 import { AgmMap, GoogleMapsAPIWrapper, MarkerManager } from '@agm/core';
 import { MapActions } from 'src/app/state/map/actions';
 import { MapStylingService } from 'src/app/services/map-styling.service';
+import { ColorState } from 'src/app/state/color/color.reducer';
+import { ColorSelectors } from 'src/app/state/color/selectors';
 enum Tab{
   Markers,
   Routes
@@ -36,7 +38,7 @@ export class MapLocationComponent implements OnInit {
 
   public activeTab: Tab = Tab.Markers; 
 
-  public styles = {};
+  public styles$: Observable<any>;
 
   public location$: Observable<{center: LatLng, zoom: number}>;
   
@@ -61,13 +63,16 @@ export class MapLocationComponent implements OnInit {
 
   constructor(
     private mapStore: Store<MapState>,
+    private colorStore: Store<ColorState>,
     private locationStore: Store<LocationState>,
     private elementRef: ElementRef,
     private mapStylingService: MapStylingService
   ) { }
 
   ngOnInit(): void {
-    this.styles = this.mapStylingService.generateStyles();
+    this.styles$ = this.colorStore.select(ColorSelectors.GetSelectedPalette).pipe(
+      map((cp: ColorPalette) => this.mapStylingService.generateStyles(cp.colors))
+    )    
     this.bounds$ = this.locationStore.select(LocationSelectors.GetBounds).pipe()
     this.location$ = this.locationStore.select(LocationSelectors.GetLocation).pipe(debounceTime(200));
     this.locationStore.select(LocationSelectors.GetCenter).pipe(

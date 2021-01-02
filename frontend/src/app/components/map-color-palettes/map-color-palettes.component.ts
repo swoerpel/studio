@@ -8,11 +8,13 @@ import { Store } from '@ngrx/store';
 import { ColorPalette } from 'src/app/shared/models';
 import { Observable } from 'rxjs';
 import { ColorActions } from 'src/app/state/color/actions';
+
 @Component({
   selector: 'app-map-color-palettes',
   templateUrl: './map-color-palettes.component.html',
   styleUrls: ['./map-color-palettes.component.scss']
 })
+
 export class MapColorPalettesComponent implements OnInit {
 
   public activeColorPalettes$: Observable<ColorPalette[]>;

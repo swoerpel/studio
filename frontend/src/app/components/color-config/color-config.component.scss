@@ -25,5 +25,19 @@
 
 }
 
-
   
+.color-palette{
+    padding: 0.15rem;
+    outline: 2px solid black;
+    margin: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+}
+.color-block{
+    width:40px;
+    height:40px;
+}
+
+.selected{
+    outline: 5px solid black;
+}
